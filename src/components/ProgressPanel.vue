@@ -24,27 +24,64 @@ function setBoss(e: Event) {
 </script>
 
 <template>
-  <section class="panel">
-    <h2>Your progress (no coin price)</h2>
-    <div class="grid">
-      <label v-if="state.act === 'slayer'" class="f" for="boss">
-        <span>Boss</span>
-        <select id="boss" :value="state.boss" @change="setBoss">
-          <option v-for="b in BOSSES" :key="b.id" :value="b.id">{{ b.name }}</option>
-        </select>
-        <span>level loads with the player</span>
-      </label>
-      <label v-for="p in stats" :key="p.id" class="f" :for="'p_' + p.id">
-        <span>{{ p.name }} <b>+{{ bonus(p) }}</b></span>
+  <section class="block">
+    <h2>What you already have</h2>
+    <label v-if="state.act === 'slayer'" class="field" for="boss">
+      <span>Slayer boss</span>
+      <select id="boss" :value="state.boss" @change="setBoss">
+        <option v-for="b in BOSSES" :key="b.id" :value="b.id">{{ b.name }}</option>
+      </select>
+    </label>
+    <div class="stats">
+      <label v-for="p in stats" :key="p.id" class="stat" :for="'p_' + p.id">
+        <span class="name">{{ p.name }}</span>
         <input :id="'p_' + p.id" type="number" min="0" :max="p.max" :value="value(p)" @change="setValue(p, $event)" />
-        <span>{{ p.hint }}</span>
+        <span class="hint">{{ p.hint }}</span>
+        <span class="bonus star num">+{{ bonus(p) }} ✯</span>
       </label>
     </div>
-    <div style="display: flex; flex-wrap: wrap; gap: 16px; margin-top: 14px">
-      <label v-for="g in TOGGLES" :key="g.id" class="c" :for="'t_' + g.id">
+    <div class="toggles">
+      <label v-for="g in TOGGLES" :key="g.id" class="check" :for="'t_' + g.id">
         <input :id="'t_' + g.id" v-model="state.tog[g.id]" type="checkbox" />
-        {{ g.name }}
+        <span>{{ g.name }}</span>
       </label>
     </div>
   </section>
 </template>
+
+<style scoped>
+.stats {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.stat {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 84px;
+  gap: 2px 12px;
+  align-items: center;
+  font-size: 14px;
+}
+.name {
+  font-weight: 600;
+}
+.stat input {
+  grid-row: span 2;
+  text-align: right;
+}
+.hint {
+  font-size: 13px;
+  color: var(--muted);
+}
+.bonus {
+  grid-column: 1 / -1;
+  font-size: 13px;
+  font-weight: 700;
+}
+.toggles {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 4px;
+}
+</style>

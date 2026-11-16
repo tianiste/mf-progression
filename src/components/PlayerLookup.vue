@@ -10,7 +10,7 @@ const CINDERBAT_SHARDS = 24
 
 const loading = ref(false)
 const message = ref(
-  'The key stays in this browser and is only sent to api.hypixel.net. Get one at developer.hypixel.net. The player needs their Skills and Slayer API settings on.',
+  'Fills in combat level, pet score, slayer levels and Booster Cookie. Get a key at developer.hypixel.net; it stays in this browser and is only sent to api.hypixel.net.',
 )
 const uuid = ref('')
 const profiles = ref<Profile[]>([])
@@ -65,7 +65,7 @@ async function load() {
     return
   }
   loading.value = true
-  message.value = 'Loading…'
+  message.value = ''
   try {
     uuid.value = await uuidOf(name)
     const list = await getProfiles(uuid.value, key)
@@ -87,40 +87,27 @@ async function load() {
 </script>
 
 <template>
-  <section class="panel">
-    <h2>Load a player</h2>
-    <div class="grid">
-      <label class="f" for="pname">
-        <span>Player name or UUID</span>
-        <input id="pname" v-model.trim="state.name" type="text" autocomplete="off" spellcheck="false" />
-      </label>
-      <label class="f" for="pkey">
-        <span>Your Hypixel API key</span>
-        <input id="pkey" v-model.trim="state.key" type="password" autocomplete="off" />
-      </label>
-      <label class="f" for="pprof">
-        <span>Profile</span>
-        <select id="pprof" v-model="profileId" :disabled="!profiles.length" @change="applyProfile(profileId)">
-          <option v-if="!profiles.length" value="">Load a player first</option>
-          <option v-for="p in profiles" :key="p.profile_id" :value="p.profile_id">
-            {{ p.cute_name || p.profile_id }}
-          </option>
-        </select>
-      </label>
-    </div>
-    <div class="actions">
-      <button type="button" class="btn" :disabled="loading" @click="load">Load stats</button>
-      <p class="note" style="max-width: 70ch" aria-live="polite">{{ message }}</p>
-    </div>
+  <section class="block">
+    <h2>Load your profile</h2>
+    <label class="field" for="pname">
+      <span>Player name or UUID</span>
+      <input id="pname" v-model.trim="state.name" type="text" autocomplete="off" spellcheck="false" />
+    </label>
+    <label class="field" for="pkey">
+      <span>Hypixel API key</span>
+      <input id="pkey" v-model.trim="state.key" type="password" autocomplete="off" />
+    </label>
+    <label v-if="profiles.length" class="field" for="pprof">
+      <span>Profile</span>
+      <select id="pprof" v-model="profileId" @change="applyProfile(profileId)">
+        <option v-for="p in profiles" :key="p.profile_id" :value="p.profile_id">
+          {{ p.cute_name || p.profile_id }}
+        </option>
+      </select>
+    </label>
+    <button type="button" class="btn" :disabled="loading" @click="load">
+      {{ loading ? 'Loading…' : 'Load profile' }}
+    </button>
+    <p class="lede" aria-live="polite">{{ message }}</p>
   </section>
 </template>
-
-<style scoped>
-.actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  align-items: center;
-  margin-top: 12px;
-}
-</style>

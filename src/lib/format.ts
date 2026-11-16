@@ -3,10 +3,12 @@ export function r1(x: number): string {
   return (Math.round(x * 10) / 10).toString()
 }
 
-/** Short coin amount: 860k, 7.50M, 156.0M, 1.25B. */
+const trim = (s: string) => s.replace(/\.?0+$/, '')
+
+/** Short coin amount: 860k, 7.5M, 156M, 1.25B. */
 export function coins(c: number): string {
-  if (c >= 1e9) return (c / 1e9).toFixed(2) + 'B'
-  if (c >= 1e6) return (c / 1e6).toFixed(c >= 1e7 ? 1 : 2) + 'M'
+  if (c >= 1e9) return trim((c / 1e9).toFixed(2)) + 'B'
+  if (c >= 1e6) return trim((c / 1e6).toFixed(c >= 1e7 ? 1 : 2)) + 'M'
   if (c >= 1e3) return Math.round(c / 1e3) + 'k'
   return Math.round(c).toString()
 }

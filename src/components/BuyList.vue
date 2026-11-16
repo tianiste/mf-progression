@@ -7,9 +7,21 @@ import { appliesTo } from '../lib/planner'
 import { coins, r1 } from '../lib/format'
 import { live, setOwned, state } from '../store'
 
-defineProps<{ plan: Plan }>()
+const props = defineProps<{ plan: Plan }>()
 
 const owned = computed(() => SOURCES.filter((s) => appliesTo(state.act)(s) && state.own[s.id]))
+
+/** Index of the last row the budget covers; the budget marker goes right after it. */
+const lastInBudget = computed(() => {
+  let last = -1
+  props.plan.rows.forEach((r, i) => {
+    if (r.inBudget) last = i
+  })
+  return last
+})
+const budgetText = computed(() =>
+  state.budget > 0 ? `Your ${coins(state.budget * 1e6)} budget ends here` : 'Set a budget to see how far it goes',
+)
 
 /** Price shown in the input, in millions: the override, else the live/default price, else blank. */
 function priceValue(s: Source): string {
@@ -26,98 +38,292 @@ function setPrice(s: Source, e: Event) {
   else state.price[s.id] = n
 }
 
-const chipClass = (s: Source) => (s.chip === 'seasonal' || s.chip === 'event' ? 'a' : 'w')
 const noteOf = (s: Source) => live.note[s.id] ?? s.note
+const chipKind = (s: Source) => (s.chip === 'seasonal' || s.chip === 'event' ? 'time' : 'warn')
 </script>
 
 <template>
-  <section class="panel">
-    <div class="list-head">
-      <h2 style="margin: 0">Buy order, cheapest Magic Find first</h2>
-      <label class="f" style="width: 170px" for="budget">
-        <span>Budget (million coins)</span>
+  <section class="ledger">
+    <div class="head">
+      <div>
+        <h2>Buy order</h2>
+        <p class="lede">
+          Cheapest Magic Find point first. Upgrade tiers stay behind the tier they build on. Prices are in millions of
+          coins (0.25 = 250k); clear one to go back to the default.
+        </p>
+      </div>
+      <label class="field budget" for="budget">
+        <span>Budget, millions</span>
         <input id="budget" v-model.number="state.budget" type="number" min="0" step="1" />
       </label>
     </div>
-    <div class="scroll">
-      <table>
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Own</th>
-            <th>Source</th>
-            <th class="n">+MF</th>
-            <th class="n">Price (M)</th>
-            <th class="n">Coins / MF</th>
-            <th class="n">Running MF</th>
-            <th class="n">Running cost</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(r, i) in plan.rows" :key="r.source.id" :class="{ in: r.inBudget }">
-            <td class="step">{{ i + 1 }}</td>
-            <td>
-              <input
-                type="checkbox"
-                :checked="false"
-                :aria-label="'Own ' + r.source.name"
-                @change="setOwned(r.source.id, true)"
-              />
-            </td>
-            <td>
-              <div class="nm">
-                {{ r.source.name
-                }}<span v-if="r.source.chip" class="chip" :class="chipClass(r.source)">{{ r.source.chip }}</span>
-              </div>
-              <div class="note">{{ noteOf(r.source) }}</div>
-            </td>
-            <td class="n">+{{ r1(r.source.mf) }}</td>
-            <td class="n">
-              <input
-                type="number"
-                min="0"
-                step="0.01"
-                :value="priceValue(r.source)"
-                :aria-label="'Price of ' + r.source.name + ' in millions'"
-                @change="setPrice(r.source, $event)"
-              />
-            </td>
-            <td class="n">
-              <span v-if="r.coinsPerMF === null" class="chip">set a price</span>
-              <template v-else>{{ r.coinsPerMF === 0 ? 'free' : coins(r.coinsPerMF) }}</template>
-            </td>
-            <td class="n">{{ r.runningMF === null ? '' : r1(r.runningMF) }}</td>
-            <td class="n">{{ r.runningCost === null ? '' : coins(r.runningCost) }}</td>
-          </tr>
-          <tr v-for="s in owned" :key="'own-' + s.id" class="own">
-            <td class="step"></td>
-            <td>
-              <input type="checkbox" checked :aria-label="'Own ' + s.name" @change="setOwned(s.id, false)" />
-            </td>
-            <td>
-              <div class="nm">{{ s.name }}</div>
-              <div class="note">{{ noteOf(s) }}</div>
-            </td>
-            <td class="n">+{{ r1(s.mf) }}</td>
-            <td class="n" colspan="4"></td>
-          </tr>
-        </tbody>
-      </table>
+
+    <div class="cols" aria-hidden="true">
+      <span>Own</span><span>Source</span><span class="r">Gives</span><span class="r">Price (M)</span
+      ><span class="r">Per ✯</span><span class="r">Running total</span>
     </div>
-    <p class="note" style="margin-top: 10px; max-width: 75ch">
-      Green edge = inside your budget. Rows with no price sit at the bottom until you type one in. Prices are per row, in
-      millions (0.86 = 860k). Clear a price to go back to the default.
-    </p>
+
+    <ol class="rows">
+      <template v-for="(r, i) in plan.rows" :key="r.source.id">
+        <li class="row" :class="{ in: r.inBudget, unpriced: r.cost === null }">
+          <span class="rank num">{{ i + 1 }}</span>
+          <input
+            class="own"
+            type="checkbox"
+            :checked="false"
+            :aria-label="'I own ' + r.source.name"
+            @change="setOwned(r.source.id, true)"
+          />
+          <div class="what">
+            <p class="name">
+              {{ r.source.name }}
+              <span v-if="r.source.chip" class="chip" :class="chipKind(r.source)">{{ r.source.chip }}</span>
+            </p>
+            <p class="note">{{ noteOf(r.source) }}</p>
+          </div>
+          <span class="gives star num">+{{ r1(r.source.mf) }} ✯</span>
+          <input
+            class="price"
+            type="number"
+            min="0"
+            step="0.01"
+            :value="priceValue(r.source)"
+            placeholder="price"
+            :aria-label="'Price of ' + r.source.name + ' in millions'"
+            @change="setPrice(r.source, $event)"
+          />
+          <span class="per num">
+            <template v-if="r.coinsPerMF === null">no price</template>
+            <span v-else class="coin">{{ r.coinsPerMF === 0 ? 'free' : coins(r.coinsPerMF) }}</span>
+          </span>
+          <span class="run num">
+            <template v-if="r.runningMF !== null">
+              <span class="star">{{ r1(r.runningMF) }} ✯</span>
+              <span class="spent">{{ coins(r.runningCost ?? 0) }}</span>
+            </template>
+          </span>
+        </li>
+        <li v-if="i === lastInBudget" class="cut" role="presentation">{{ budgetText }}</li>
+      </template>
+      <li v-if="lastInBudget === -1 && plan.rows.length" class="cut first" role="presentation">
+        {{ budgetText }}
+      </li>
+    </ol>
+
+    <template v-if="owned.length">
+      <h3>Already owned</h3>
+      <ul class="owned">
+        <li v-for="s in owned" :key="s.id">
+          <label class="check">
+            <input type="checkbox" checked @change="setOwned(s.id, false)" />
+            <span>{{ s.name }}</span>
+          </label>
+          <span class="star num">+{{ r1(s.mf) }} ✯</span>
+        </li>
+      </ul>
+    </template>
   </section>
 </template>
 
 <style scoped>
-.list-head {
+.head {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
-  align-items: end;
+  gap: 16px 32px;
   justify-content: space-between;
-  margin-bottom: 10px;
+  align-items: flex-end;
+  margin-bottom: 18px;
+}
+h2 {
+  font-size: 24px;
+  font-weight: 700;
+}
+.lede {
+  margin-top: 4px;
+  font-size: 14px;
+  color: var(--muted);
+  max-width: 60ch;
+}
+.budget {
+  width: 160px;
+}
+
+/* One grid drives the column labels and every row. */
+.cols,
+.row {
+  display: grid;
+  grid-template-columns: 28px 22px minmax(0, 1fr) 72px 92px 76px 96px;
+  gap: 12px;
+  align-items: start;
+}
+.cols {
+  padding: 0 12px 8px;
+  font-size: 13px;
+  color: var(--muted);
+  border-bottom: 2px solid var(--rim);
+}
+.cols > span:first-child {
+  grid-column: 1 / span 2;
+}
+.r {
+  text-align: right;
+}
+.rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.row {
+  padding: 14px 12px;
+  border-bottom: 1px solid var(--rim);
+}
+.row.in {
+  background: var(--panel);
+  box-shadow: inset 3px 0 0 var(--good);
+}
+.rank {
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.row.in .rank {
+  color: var(--good);
+}
+.own {
+  margin-top: 3px;
+}
+.name {
+  font-weight: 700;
+}
+.note {
+  margin-top: 2px;
+  font-size: 14px;
+  color: var(--muted);
+  max-width: 62ch;
+}
+.chip {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 0 7px;
+  border-radius: 3px;
+  font-size: 12px;
+  font-weight: 600;
+  vertical-align: 2px;
+  white-space: nowrap;
+}
+.chip.time {
+  background: var(--sunk);
+  color: var(--violet);
+}
+.chip.warn {
+  border: 1px solid var(--gold);
+  color: var(--gold);
+}
+.gives,
+.per,
+.run {
+  text-align: right;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.price {
+  text-align: right;
+  padding: 4px 8px;
+}
+.unpriced .per {
+  color: var(--muted);
+  font-weight: 400;
+  font-size: 14px;
+}
+.run {
+  display: flex;
+  flex-direction: column;
+}
+.spent {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--muted);
+}
+.cut {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--good);
+}
+.cut::after {
+  content: '';
+  flex: 1;
+  border-top: 2px dashed var(--good);
+}
+
+h3 {
+  margin: 32px 0 8px;
+  font-size: 17px;
+}
+.owned {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.owned li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--rim);
+  color: var(--muted);
+}
+
+/* Phones: name across the top, numbers in a row beneath. */
+@media (max-width: 720px) {
+  .cols {
+    display: none;
+  }
+  .row {
+    grid-template-columns: 24px 22px repeat(3, minmax(0, 1fr));
+    gap: 8px 10px;
+    padding: 14px 4px;
+  }
+  .what {
+    grid-column: 3 / -1;
+  }
+  .gives {
+    grid-column: 3;
+    grid-row: 2;
+    text-align: left;
+  }
+  .price {
+    grid-column: 4;
+    grid-row: 2;
+  }
+  .per {
+    grid-column: 5;
+    grid-row: 2;
+  }
+  .run {
+    grid-column: 3 / -1;
+    grid-row: 3;
+    flex-direction: row;
+    gap: 10px;
+    justify-content: flex-start;
+    text-align: left;
+  }
+  .row.in {
+    padding-left: 8px;
+  }
+  .per::before,
+  .run::before {
+    content: 'per ✯ ';
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--muted);
+  }
+  .run::before {
+    content: 'Total';
+  }
 }
 </style>

@@ -2,21 +2,28 @@
 import { ref } from 'vue'
 import type { Profile } from '../lib/hypixel'
 import { NetworkBlockedError, getProfiles, readMember, uuidOf } from '../lib/hypixel'
-import { BOSSES } from '../data/sources'
-import { state } from '../store'
+import type { GearScan } from '../lib/gear'
+import { scanGear } from '../lib/gear'
+import { BOSSES, SOURCES } from '../data/sources'
+import { setOwned, state } from '../store'
 
 const loading = ref(false)
 const message = ref(
-  'Fills in combat level, pet score, slayer levels and Booster Cookie. Get a key at developer.hypixel.net; it stays in this browser and is only sent to api.hypixel.net.',
+  'Fills in combat level, pet score, slayer levels, Booster Cookie and the Magic Find gear you own. Get a key at developer.hypixel.net; it stays in this browser and is only sent to api.hypixel.net.',
 )
 const uuid = ref('')
 const profiles = ref<Profile[]>([])
 const profileId = ref('')
+const gear = ref<GearScan | null>(null)
 
-function applyProfile(id: string) {
+const ROMAN = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X']
+const sourceName = (id: string) => SOURCES.find((s) => s.id === id)?.name ?? id
+
+async function applyProfile(id: string) {
   const p = profiles.value.find((x) => x.profile_id === id)
   if (!p) return
-  const r = readMember(p.members?.[uuid.value])
+  const member = p.members?.[uuid.value]
+  const r = readMember(member)
   const got: string[] = []
   const miss: string[] = []
   if (r.combat !== undefined) {
@@ -37,12 +44,22 @@ function applyProfile(id: string) {
     state.tog.cookie = r.cookie
     got.push('Cookie ' + (r.cookie ? 'on' : 'off'))
   }
+
+  gear.value = null
+  try {
+    const scan = await scanGear(member)
+    gear.value = scan
+    for (const s of scan.owned) setOwned(s, true)
+    if (!scan.inventoryApi) miss.push('inventories (turn on the Inventory API in your SkyBlock settings)')
+  } catch {
+    miss.push('inventories (could not be read)')
+  }
+
   message.value =
     `Loaded ${p.cute_name || 'profile'}: ${got.join(', ') || 'nothing'}.` +
     (miss.length ? ` Not in the API response: ${miss.join(', ')}.` : '') +
-    ' Set by hand: Bestiary, account upgrade, pet levels and the items you own.'
+    ' Set by hand: Bestiary, account upgrade, pet levels and attribute shards.'
 }
-
 
 async function load() {
   const name = state.name.trim()
@@ -60,7 +77,7 @@ async function load() {
     if (!first) throw new Error('That player has no SkyBlock profiles.')
     profiles.value = list
     profileId.value = first.profile_id
-    applyProfile(first.profile_id)
+    await applyProfile(first.profile_id)
   } catch (e) {
     message.value =
       e instanceof NetworkBlockedError
@@ -95,5 +112,44 @@ async function load() {
       {{ loading ? 'Loading…' : 'Load profile' }}
     </button>
     <p class="lede" aria-live="polite">{{ message }}</p>
+
+    <div v-if="gear && gear.inventoryApi" class="gear">
+      <h3>Your Magic Find gear</h3>
+      <p v-if="gear.owned.size" class="lede">
+        Ticked as owned: {{ [...gear.owned].map(sourceName).join(', ') }}.
+      </p>
+      <p v-else class="lede">No Magic Find items found in your inventories.</p>
+      <template v-if="gear.looting.length">
+        <p class="lede">Looting on your items:</p>
+        <ul>
+          <li v-for="(l, i) in gear.looting.slice(0, 6)" :key="i">
+            {{ l.name }}: Looting {{ ROMAN[l.level] ?? l.level }} <span class="where">({{ l.where }})</span>
+          </li>
+        </ul>
+        <p class="lede">Looting only counts on the item you kill with, so put your best book on that one.</p>
+      </template>
+      <p v-else class="lede">None of your items have Looting yet.</p>
+    </div>
   </section>
 </template>
+
+<style scoped>
+.gear {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 4px;
+}
+h3 {
+  font-size: 15px;
+}
+ul {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 14px;
+}
+.where {
+  color: var(--muted);
+  font-size: 13px;
+}
+</style>

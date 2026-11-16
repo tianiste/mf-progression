@@ -1,0 +1,129 @@
+{
+ "sources": {
+  "hypixel": "Hypixel SkyBlock Resource Pack (Hypixel API /v2/resources/packs)",
+  "head": "Player head skins from the Hypixel API items resource and NotEnoughUpdates-REPO (attribute shards)",
+  "minecraft": "Minecraft client textures"
+ },
+ "items": {
+  "ANGUISH_ARTIFACT": {
+   "file": "heads/anguish_artifact.png",
+   "size": 32,
+   "source": "head"
+  },
+  "BOOSTER_COOKIE": {
+   "file": "minecraft/cookie.png",
+   "size": 16,
+   "source": "minecraft"
+  },
+  "CELESTIAL_MASON_JAR": {
+   "file": "heads/celestial_mason_jar.png",
+   "size": 32,
+   "source": "head"
+  },
+  "CLOVER_HELMET": {
+   "file": "heads/clover_helmet.png",
+   "size": 32,
+   "source": "head"
+  },
+  "CROWN_OF_AVARICE": {
+   "file": "heads/crown_of_avarice.png",
+   "size": 32,
+   "source": "head"
+  },
+  "CROWN_OF_GREED": {
+   "file": "minecraft/golden_helmet.png",
+   "size": 16,
+   "source": "minecraft"
+  },
+  "DIANAS_BOOKSHELF": {
+   "file": "minecraft/bookshelf.png",
+   "size": 16,
+   "source": "minecraft"
+  },
+  "EPOCH_CAKE_BLACK": {
+   "file": "heads/epoch_cake_black.png",
+   "size": 32,
+   "source": "head"
+  },
+  "FOUR_EYED_FISH": {
+   "file": "heads/four_eyed_fish.png",
+   "size": 32,
+   "source": "head"
+  },
+  "GOD_POTION_2": {
+   "file": "heads/god_potion_2.png",
+   "size": 32,
+   "source": "head"
+  },
+  "GOLDEN_FLEECE": {
+   "file": "hypixel/golden_fleece.png",
+   "size": 16,
+   "source": "hypixel"
+  },
+  "MAGMA_LORD_HELMET": {
+   "file": "heads/magma_lord_helmet.png",
+   "size": 32,
+   "source": "head"
+  },
+  "NECRONS_LADDER": {
+   "file": "minecraft/ladder.png",
+   "size": 16,
+   "source": "minecraft"
+  },
+  "ODGERS_DIAMOND_TOOTH": {
+   "file": "heads/odgers_diamond_tooth.png",
+   "size": 32,
+   "source": "head"
+  },
+  "PULSE_RING": {
+   "file": "heads/pulse_ring.png",
+   "size": 32,
+   "source": "head"
+  },
+  "SHARD_CINDER_BAT": {
+   "file": "heads/shard_cinder_bat.png",
+   "size": 32,
+   "source": "head"
+  },
+  "SHARD_DROWNED": {
+   "file": "heads/shard_drowned.png",
+   "size": 32,
+   "source": "head"
+  },
+  "SHARD_LAVA_FLAME": {
+   "file": "heads/shard_lava_flame.png",
+   "size": 32,
+   "source": "head"
+  },
+  "SHARD_MINOTAUR": {
+   "file": "heads/shard_minotaur.png",
+   "size": 32,
+   "source": "head"
+  },
+  "SORROW_HELMET": {
+   "file": "minecraft/chainmail_helmet.png",
+   "size": 16,
+   "source": "minecraft"
+  },
+  "WOLF_FUR_MIXIN": {
+   "file": "heads/wolf_fur_mixin.png",
+   "size": 32,
+   "source": "head"
+  },
+  "minecraft:beacon": {
+   "file": "minecraft/beacon.png",
+   "size": 16,
+   "source": "minecraft"
+  },
+  "minecraft:enchanted_book": {
+   "file": "minecraft/enchanted_book.png",
+   "size": 16,
+   "source": "minecraft"
+  },
+  "minecraft:suspicious_stew": {
+   "file": "minecraft/suspicious_stew.png",
+   "size": 16,
+   "source": "minecraft"
+  }
+ }
+}

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { Source } from '../data/sources'
-import { SLOT_NAME, SOURCES, goesOn } from '../data/sources'
+import { SOURCES, goesOn } from '../data/sources'
 import type { Plan } from '../lib/planner'
 import { appliesTo } from '../lib/planner'
 import { coins, r1 } from '../lib/format'
@@ -23,7 +23,7 @@ const lastInBudget = computed(() => {
   return last
 })
 const budgetText = computed(() =>
-  state.budget > 0 ? `Your ${coins(state.budget * 1e6)} budget ends here` : 'Set a budget to see how far it goes',
+  state.budget > 0 ? `${coins(state.budget * 1e6)} budget` : 'No budget set',
 )
 
 /** Price shown in the input, in millions: the override, else the live/default price, else blank. */
@@ -41,11 +41,22 @@ function setPrice(s: Source, e: Event) {
   else state.price[s.id] = n
 }
 
-const MARKET = { bazaar: 'Bazaar', ah: 'Auction House' } as const
+/** One short line per row: what it needs or replaces, where it goes, else its note. */
+function lineOf(r: Plan['rows'][number]): string {
+  const bits: string[] = []
+  if (r.neededFor) bits.push(`Needed for ${r.neededFor.name}`)
+  else if (r.replaces) bits.push(`Replaces ${r.replaces.name}`)
+  const on = goesOn(r.source, state.act)
+  if (on) bits.push(`On ${on}`)
+  if (r.source.note) bits.push(r.source.note.replace(/\.$/, ''))
+  return bits.join('. ')
+}
+
+const MARKET = { bazaar: 'BZ', ah: 'AH' } as const
 /** A live price replaces the "old estimate" style warning chips; time-limited chips stay. */
 function chipOf(s: Source): { text: string; kind: string } | null {
   const m = live.market[s.id]
-  if (m && s.chip !== 'seasonal' && s.chip !== 'event') return { text: 'live ' + MARKET[m], kind: 'live' }
+  if (m && s.chip !== 'seasonal' && s.chip !== 'event') return { text: MARKET[m], kind: 'live' }
   if (!s.chip) return null
   return { text: s.chip, kind: s.chip === 'seasonal' || s.chip === 'event' ? 'time' : 'warn' }
 }
@@ -56,21 +67,17 @@ function chipOf(s: Source): { text: string; kind: string } | null {
     <div class="head">
       <div>
         <h2>Buy order</h2>
-        <p class="lede">
-          Cheapest Magic Find point first. Upgrade tiers stay behind the tier they build on, and only one helmet and
-          one pet item count, so each row shows what it adds on top of what you have. Prices are in millions of coins
-          (0.25 = 250k); clear one to go back to the default.
-        </p>
+        <p class="lede">Prices in millions. Clear one to reset it.</p>
       </div>
       <label class="field budget" for="budget">
-        <span>Budget, millions</span>
+        <span>Budget (M)</span>
         <input id="budget" v-model.number="state.budget" type="number" min="0" step="1" />
       </label>
     </div>
 
     <div class="cols" aria-hidden="true">
-      <span>Own</span><span>Source</span><span class="r">Gives</span><span class="r">Price (M)</span
-      ><span class="r">Per ✯</span><span class="r">Running total</span>
+      <span>Own</span><span>Item</span><span class="r">MF</span><span class="r">Price (M)</span
+      ><span class="r">Per ✯</span><span class="r">Total</span>
     </div>
 
     <ol class="rows">
@@ -91,18 +98,10 @@ function chipOf(s: Source): { text: string; kind: string } | null {
               {{ r.source.name }}
               <span v-if="chipOf(r.source)" class="chip" :class="chipOf(r.source)!.kind">{{ chipOf(r.source)!.text }}</span>
             </p>
-            <p class="note">{{ r.source.note }}</p>
-            <p v-if="goesOn(r.source, state.act)" class="note where">Goes on {{ goesOn(r.source, state.act) }}.</p>
-            <p v-if="r.neededFor" class="note where">Adds nothing by itself; you need it for the {{ r.neededFor.name }}.</p>
-            <p v-if="r.replaces && !r.neededFor" class="note where">
-              Replaces your {{ r.replaces.name }} in the {{ SLOT_NAME[r.source.slot!] }} slot, so it adds only the
-              difference.
-            </p>
+            <p v-if="lineOf(r)" class="note">{{ lineOf(r) }}</p>
             <p v-if="value && r.cost && paybackHours(r.cost, r.gain, value) !== null" class="note pay">
-              Earns about {{ coins(r.gain * value.perPointPerHour) }} more per hour on {{ value.mob.name }}, so it pays for itself
-              after {{ formatHours(paybackHours(r.cost, r.gain, value)!) }} of farming.
+              +{{ coins(r.gain * value.perPointPerHour) }}/h, pays off in {{ formatHours(paybackHours(r.cost, r.gain, value)!) }}
             </p>
-            <p v-if="live.detail[r.source.id]" class="note detail">{{ live.detail[r.source.id] }}</p>
             </div>
           </div>
           <span class="gives star num">+{{ r1(r.gain) }} ✯</span>
@@ -117,7 +116,7 @@ function chipOf(s: Source): { text: string; kind: string } | null {
             @change="setPrice(r.source, $event)"
           />
           <span class="per num">
-            <template v-if="r.coinsPerMF === null">no price</template>
+            <template v-if="r.coinsPerMF === null">–</template>
             <span v-else class="coin">{{ r.coinsPerMF === 0 ? 'free' : coins(r.coinsPerMF) }}</span>
           </span>
           <span class="run num">
@@ -135,21 +134,20 @@ function chipOf(s: Source): { text: string; kind: string } | null {
     </ol>
 
     <template v-if="plan.noGain.length">
-      <h3>Adds nothing for you</h3>
-      <p class="lede">A better item already fills the slot, so these don't add Magic Find while you farm this.</p>
+      <h3>Won't help</h3>
       <ul class="owned">
         <li v-for="n in plan.noGain" :key="n.source.id">
           <span class="check">
             <ItemIcon :source="n.source.id" :size="20" />
             <span>{{ n.source.name }}</span>
           </span>
-          <span class="muted-line">{{ n.blockedBy.name }} is better in the {{ SLOT_NAME[n.source.slot!] }} slot</span>
+          <span class="muted-line">{{ n.blockedBy.name }} is better</span>
         </li>
       </ul>
     </template>
 
     <template v-if="owned.length">
-      <h3>Already owned</h3>
+      <h3>Owned</h3>
       <ul class="owned">
         <li v-for="s in owned" :key="s.id">
           <label class="check">

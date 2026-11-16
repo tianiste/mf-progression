@@ -26,9 +26,9 @@ function setBoss(e: Event) {
 
 <template>
   <section class="block">
-    <h2>What you already have</h2>
+    <h2>Your stats</h2>
     <label v-if="state.act === 'slayer'" class="field" for="boss">
-      <span>Slayer boss</span>
+      <span>Boss</span>
       <select id="boss" :value="state.boss" @change="setBoss">
         <option v-for="b in BOSSES" :key="b.id" :value="b.id">{{ b.name }}</option>
       </select>

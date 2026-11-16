@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import { MF_CAP, goesOn } from '../data/sources'
 import type { Plan } from '../lib/planner'
 import { coins, r1 } from '../lib/format'
-import { live, state } from '../store'
+import { state } from '../store'
 import ItemIcon from './ItemIcon.vue'
 import type { MobValue } from '../lib/payback'
 import { formatHours, paybackHours } from '../lib/payback'
@@ -18,54 +18,52 @@ const next = computed(() => props.plan.rows[0])
 const after = computed(() => props.plan.rows.slice(1, 3))
 const cap = (x: number) => Math.min(MF_CAP, x)
 const mult = (x: number) => '×' + (1 + cap(x) / 100).toFixed(2)
-const gain = computed(() => props.plan.budgetMF - props.plan.now)
-const budgetLabel = computed(() => (state.budget > 0 ? coins(state.budget * 1e6) : 'no'))
+const budgetLabel = computed(() => (state.budget > 0 ? coins(state.budget * 1e6) : 'No'))
 </script>
 
 <template>
   <div class="tooltip" aria-live="polite">
     <template v-if="next">
-      <p class="kicker">Buy this next</p>
+      <p class="kicker">Next buy</p>
       <div class="item-row">
         <ItemIcon :source="next.source.id" :size="48" />
         <p class="item">{{ next.source.name }}</p>
       </div>
       <p class="line star-line">✯ Magic Find +{{ r1(next.gain) }}</p>
-      <p v-if="next.cost === null" class="line muted">No price yet. Type one into the list below.</p>
-      <p v-else-if="next.cost === 0" class="line coin-line">Free: costs only XP or time</p>
+      <p v-if="next.cost === null" class="line muted">No price yet</p>
+      <p v-else-if="next.cost === 0" class="line coin-line">Free</p>
       <p v-else class="line coin-line">
-        {{ coins(next.cost) }} coins, {{ coins(next.coinsPerMF ?? 0) }} per ✯
+        {{ coins(next.cost) }} ({{ coins(next.coinsPerMF ?? 0) }} per ✯)
       </p>
       <p v-if="pay !== null" class="line pay">
-        Pays for itself after {{ formatHours(pay) }} of {{ value!.mob.name }}.
+        Pays off in {{ formatHours(pay) }}
       </p>
-      <p v-if="goesOn(next.source, state.act)" class="line where">Goes on {{ goesOn(next.source, state.act) }}.</p>
-      <p class="line muted note">{{ next.source.note }}</p>
-      <p v-if="live.detail[next.source.id]" class="line muted note live">{{ live.detail[next.source.id] }}</p>
+      <p v-if="goesOn(next.source, state.act)" class="line where">On {{ goesOn(next.source, state.act) }}</p>
+      <p v-if="next.source.note" class="line muted note">{{ next.source.note }}</p>
       <p v-if="after.length" class="line muted then">
-        Then {{ after.map((r) => r.source.name).join(', then ') }}.
+        Then {{ after.map((r) => r.source.name).join(', ') }}
       </p>
     </template>
     <template v-else>
-      <p class="kicker">Nothing left to buy</p>
-      <p class="item">You own every source for this activity.</p>
+      <p class="kicker">All done</p>
+      <p class="item">Nothing left to buy</p>
     </template>
 
     <dl class="readout">
       <div>
-        <dt>You have</dt>
-        <dd><span class="big">{{ r1(cap(plan.now)) }}</span> ✯ <span class="sub">{{ mult(plan.now) }} drops</span></dd>
+        <dt>Now</dt>
+        <dd><span class="big">{{ r1(cap(plan.now)) }}</span> ✯ <span class="sub">{{ mult(plan.now) }}</span></dd>
       </div>
       <div>
-        <dt>With a {{ budgetLabel }} budget</dt>
+        <dt>{{ budgetLabel }} budget</dt>
         <dd>
           <span class="big">{{ r1(cap(plan.budgetMF)) }}</span> ✯
-          <span class="sub">+{{ r1(gain) }} for {{ coins(plan.budgetCost) }}</span>
+          <span class="sub">{{ coins(plan.budgetCost) }}</span>
         </dd>
       </div>
       <div>
-        <dt>Everything listed</dt>
-        <dd><span class="big">{{ r1(cap(plan.everything)) }}</span> ✯ <span class="sub">cap {{ MF_CAP }}</span></dd>
+        <dt>Max</dt>
+        <dd><span class="big">{{ r1(cap(plan.everything)) }}</span> ✯ <span class="sub">{{ mult(plan.everything) }}</span></dd>
       </div>
     </dl>
   </div>

@@ -29,11 +29,11 @@ onUnmounted(() => clearInterval(timer))
 
 const priceLine = computed(() => {
   const p = live.prices
-  if (p.error) return `Live prices could not be loaded (${p.error}), so the list uses the estimates.`
-  if (!p.origin) return 'Loading live prices…'
+  if (p.error) return `Prices didn't load (${p.error}); using estimates.`
+  if (!p.origin) return 'Loading prices…'
   if (p.origin === 'bazaar-only')
-    return `Bazaar prices from the Hypixel API, ${ago(p.updatedAt)}. Auction House prices are only available on the hosted site; those rows use estimates.`
-  return `Prices updated ${ago(p.updatedAt)}. Bazaar prices from the Hypixel API.`
+    return `Bazaar prices ${ago(p.updatedAt)}. No Auction House prices here.`
+  return `Prices ${ago(p.updatedAt)}.`
 })
 </script>
 
@@ -44,17 +44,15 @@ const priceLine = computed(() => {
       <span>Luckledger</span>
     </a>
     <p class="status">
-      Values from 0.27.3 Release Candidate 2. The update goes live in the 17 Nov maintenance, so numbers can still
-      change.
+      0.27.3 RC2 numbers. Some may change on 17 Nov.
     </p>
   </header>
 
   <section class="hero wrap">
     <div class="pitch">
-      <h1>Every Magic Find source, cheapest point first.</h1>
+      <h1>Cheapest Magic Find first.</h1>
       <p>
-        Each point of Magic Find adds the same 1% to your drops, so the best upgrade is always the cheapest one you
-        don't own yet. Tick what you have, set a budget, and the list re-sorts as you go.
+        Every point is +1% drops. Tick what you own, set a budget.
       </p>
     </div>
     <NextBuy :plan="result" :value="value" />
@@ -73,22 +71,14 @@ const priceLine = computed(() => {
   </div>
 
   <footer class="foot wrap">
-    <h2>How it's counted</h2>
-    <ul>
-      <li>Drops = base chance × (1 + Magic Find / 100), on every mob drop, not only drops under 5%.</li>
-      <li>Past 100% the extra becomes a chance to double the drop. Magic Find caps at 500.</li>
-      <li>
-        Pets, enrichments, Sorrow base stats, cloaks, Lucky Clover, Legion, Jerry Candy and SkyBlock levels no longer
-        give Magic Find.
-      </li>
-    </ul>
+    <p>Drop chance × (1 + MF/100), on every drop. Cap 500.</p>
     <p class="fine">
       {{ priceLine }}
       <template v-if="live.prices.origin === 'worker'">
-        Auction House data by <a href="https://sky.coflnet.com" rel="noopener">SkyCofl</a>.
+        AH data: <a href="https://sky.coflnet.com" rel="noopener">SkyCofl</a>.
       </template>
     </p>
-    <p class="fine">Not affiliated with Hypixel or Mojang. You can type over any price in the list.</p>
+    <p class="fine">Not affiliated with Hypixel or Mojang.</p>
   </footer>
 </template>
 

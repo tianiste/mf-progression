@@ -1,14 +1,13 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { ACTIVITIES, MF_CAP } from '../data/sources'
+import { MF_CAP } from '../data/sources'
 import { breakdown } from '../lib/planner'
 import { r1 } from '../lib/format'
 import { state } from '../store'
 
 const b = computed(() => breakdown(state))
-const act = computed(() => ACTIVITIES.find((a) => a.id === state.act)?.name ?? '')
 const pct = (now: number, max: number) => (max > 0 ? Math.min(100, (now / max) * 100) : 0)
-const KIND = { grind: 'free to grind', buy: 'costs coins', boost: 'temporary' } as const
+const KIND = { grind: 'grind', buy: 'coins', boost: 'boost' } as const
 const left = computed(() => {
   const by = { grind: 0, buy: 0, boost: 0 }
   for (const l of b.value.lines) by[l.kind] += Math.max(0, l.max - l.now)
@@ -18,13 +17,10 @@ const left = computed(() => {
 
 <template>
   <section class="max" aria-labelledby="max-h">
-    <h2 id="max-h">How far you can go</h2>
+    <h2 id="max-h">Max Magic Find</h2>
     <p class="lede">
-      Farming {{ act.toLowerCase() }}, the most Magic Find you can reach is
-      <strong class="star num">{{ r1(Math.min(MF_CAP, b.max)) }} ✯</strong> (×{{ (1 + Math.min(MF_CAP, b.max) / 100).toFixed(2) }}
-      drops). You have <strong class="star num">{{ r1(b.now) }}</strong>, {{ Math.round(pct(b.now, b.max)) }}% of the way.
-      Still open: <span class="num">+{{ r1(left.grind) }}</span> by grinding, <span class="num">+{{ r1(left.buy) }}</span> from
-      coins and <span class="num">+{{ r1(left.boost) }}</span> from boosts.
+      <strong class="star num">{{ r1(b.now) }}</strong> of <strong class="star num">{{ r1(Math.min(MF_CAP, b.max)) }}</strong>.
+      Left: +{{ r1(left.grind) }} grind, +{{ r1(left.buy) }} coins, +{{ r1(left.boost) }} boosts.
     </p>
 
     <ul class="lines">
@@ -40,21 +36,7 @@ const left = computed(() => {
       </li>
     </ul>
 
-    <ul class="notes">
-      <li>
-        The stat caps at {{ MF_CAP }}. Even with everything above you stay far below it, so the cap never limits a real
-        setup.
-      </li>
-      <li>
-        Each point adds 1% of the base drop chance. When a drop's chance passes 100%, the extra becomes a chance to get it
-        twice.
-      </li>
-      <li>
-        Not counted in the maximum: a Jerry Statspocalypse mayor (+10%), Bobbin' Time with a big fishing party (the wiki
-        lists up to +20), stews above +1, a fragged Daedalus Blade (double the Bestiary bonus) and mob-specific Bestiary
-        milestones beyond the value you entered.
-      </li>
-    </ul>
+    <p class="notes">Leaves out Jerry (+10%), big Bobbin' parties and fragged Daedalus.</p>
   </section>
 </template>
 
@@ -120,13 +102,8 @@ h2 {
   background: var(--good);
 }
 .notes {
-  margin: 20px 0 0;
-  padding-left: 18px;
-  font-size: 14px;
+  margin-top: 16px;
+  font-size: 13px;
   color: var(--muted);
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  max-width: 75ch;
 }
 </style>

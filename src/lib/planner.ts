@@ -226,11 +226,10 @@ export function breakdown(state: State): Breakdown {
   }
   const pool = SOURCES.filter(on)
   lines.push({
-    label: 'Items, enchants and shards',
+    label: 'Items',
     now: setMF(ownedSet(state)),
     max: setMF(new Set(pool)),
     kind: 'buy',
-    hint: 'Everything in the buy list, counting one helmet and one pet item',
   })
   const now = lines.reduce((t, l) => t + l.now, 0)
   const max = lines.reduce((t, l) => t + l.max, 0)

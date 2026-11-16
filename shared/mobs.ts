@@ -51,7 +51,7 @@ export const MOBS: Mob[] = [
   {
     id: 'revenant', name: 'Revenant Horror V', act: 'slayer', boss: 'zombie', types: ['Undead'], killsPerHour: 30,
     drops: [],
-    dataNote: 'The wiki only gives drop weights for Revenant Horror, not chances, so there is no payback estimate yet.',
+    dataNote: 'No drop chances yet.',
   },
   {
     id: 'tarantula', name: 'Tarantula Broodfather V', act: 'slayer', boss: 'spider', types: ['Arthropod'], killsPerHour: 30,
@@ -62,7 +62,7 @@ export const MOBS: Mob[] = [
       ah('SHRIVELED_WASP', 1, 0.14), ah('DIGESTED_MOSQUITO', 1, 0.071), bz('ENSNARED_SNAIL', 1, 0.042),
       ah('PRIMORDIAL_EYE', 1, 0.014),
     ],
-    dataNote: 'Wiki chances, with the RC2 cuts to Tarantula Silk, Toxic Arrow Poison and Spider Catalyst.',
+    dataNote: '',
   },
   {
     id: 'sven', name: 'Sven Packmaster IV', act: 'slayer', boss: 'wolf', types: ['Animal'], killsPerHour: 40,
@@ -70,7 +70,7 @@ export const MOBS: Mob[] = [
       bz('WOLF_TOOTH', 57, 100), bz('HAMSTER_WHEEL', 4.5, 5, 'R2'), bz('ENCHANTMENT_CRITICAL_6', 1, 0.41),
       bz('FURBALL', 1, 0.82), ah('RED_CLAW_EGG', 1, 0.04), ah('GRIZZLY_BAIT', 1, 0.06), ah('OVERFLUX_CAPACITOR', 1, 0.04),
     ],
-    dataNote: 'Wiki chances (some rows list two tiers; the lower one is used), with the RC2 cut to Hamster Wheel.',
+    dataNote: '',
   },
   {
     id: 'voidgloom', name: 'Voidgloom Seraph IV', act: 'slayer', boss: 'enderman', types: ['Ender'], killsPerHour: 25,
@@ -81,7 +81,7 @@ export const MOBS: Mob[] = [
       ah('ETHERWARP_MERGER', 1, 0.42), ah('POCKET_ESPRESSO_MACHINE', 1, 0.39), ah('HANDY_BLOOD_CHALICE', 1, 0.18),
       ah('JUDGEMENT_CORE', 1, 0.056), ah('EXCEEDINGLY_RARE_ENDER_ARTIFACT_UPGRADER', 1, 0.028), bz('ENDSTONE_IDOL', 1, 0.014),
     ],
-    dataNote: 'Wiki chances; the release candidates list no Voidgloom changes.',
+    dataNote: '',
   },
   {
     id: 'inferno', name: 'Inferno Demonlord IV', act: 'slayer', boss: 'blaze', types: ['Infernal'], killsPerHour: 15,
@@ -92,7 +92,7 @@ export const MOBS: Mob[] = [
       ah('WILSON_ENGINEERING_PLANS', 1, 0.09), bz('SUBZERO_INVERTER', 1, 0.09), bz('FLAWED_OPAL_GEM', 320, 2.9),
       bz('SCORCHED_POWER_CRYSTAL', 1, 3.48),
     ],
-    dataNote: 'Wiki chances with the RC2 changes (Derelict Ashe 64-96, cuts to Blaze Powder, Magma Arrows, Kelvin Inverter, Archfiend Dice).',
+    dataNote: '',
   },
   {
     id: 'inquisitor', name: 'Minos Inquisitor', act: 'diana', types: ['Mythological', 'Humanoid', 'Elusive'],
@@ -101,7 +101,7 @@ export const MOBS: Mob[] = [
       bz('ANCIENT_CLAW', 32, 100), bz('ENCHANTED_GOLD', 32, 50, 'R1'), bz('ENCHANTED_ANCIENT_CLAW', 2, 50, 'R1'),
       bz('ENCHANTMENT_ULTIMATE_CHIMERA_1', 1, 2.5, 'R1', 'wiki 1.25%; RC2 says Chimera was not changed'),
     ],
-    dataNote: 'Mythic Inquisitor, RC1 chances. The Chimera chance is disputed (wiki 1.25%, RC1 2.5%).',
+    dataNote: '',
   },
   {
     id: 'champion', name: 'Minos Champion', act: 'diana', types: ['Mythological', 'Humanoid'],
@@ -110,7 +110,7 @@ export const MOBS: Mob[] = [
       bz('ANCIENT_CLAW', 14, 100), bz('ENCHANTED_GOLD', 14, 50, 'R1'),
       ah('MINOS_RELIC', 1, 0.15, 'R1', 'wiki 0.04%; RC2 says Minos Relic was not changed'),
     ],
-    dataNote: 'Mythic Champion, RC1 chances. The Minos Relic chance is disputed (wiki 0.04%, RC1 0.15%).',
+    dataNote: '',
   },
   {
     id: 'thunder', name: 'Thunder', act: 'lava', types: ['Magmatic', 'Arcane', 'Elusive'], bestiary: 'Thunder', killsPerHour: 4,
@@ -118,7 +118,7 @@ export const MOBS: Mob[] = [
       bz('MAGMA_FISH_SILVER', 12, 100), bz('THUNDER_SHARDS', 1, 100, 'W', 'RC1 lists a shard at 50% instead'),
       bz('ENCHANTMENT_ULTIMATE_FLASH_1', 1, 4, 'R2'),
     ],
-    dataNote: 'RC2 Flash chance; Thunder Fragment from the wiki (RC1 differs).',
+    dataNote: '',
   },
   {
     id: 'jawbus', name: 'Lord Jawbus', act: 'lava', types: ['Magmatic', 'Construct', 'Elusive'], bestiary: 'Lord Jawbus', killsPerHour: 1,
@@ -126,14 +126,14 @@ export const MOBS: Mob[] = [
       bz('MAGMA_FISH_SILVER', 16, 100), bz('MAGMA_LORD_FRAGMENT', 1, 50, 'R1', 'wiki 100%'),
       bz('BOBBIN_SCRIPTURES', 1, 2.5, 'R1'), bz('RADIOACTIVE_VIAL', 1, 1.25, 'R2'),
     ],
-    dataNote: 'RC1/RC2 chances. The Magma Lord Fragment chance is disputed (wiki 100%, RC1 50%).',
+    dataNote: '',
   },
   {
     id: 'gws', name: 'Great White Shark', act: 'shark', types: ['Aquatic', 'Animal', 'Elusive'], bestiary: 'Great White Shark', killsPerHour: 10,
     drops: [
       bz('SHARK_FIN', 16, 100), bz('GREAT_WHITE_SHARK_TOOTH', 1, 7.5, 'R2'), bz('ENCHANTED_SHARK_FIN', 1, 5, 'R1'),
     ],
-    dataNote: 'RC1/RC2 chances. Fishing Festival only. The Legendary Megalodon pet (1%) is not priced yet.',
+    dataNote: '',
   },
   {
     id: 'ghost', name: 'Ghost', act: 'ghost', types: ['Arcane', 'Subterranean'], bestiary: 'Ghost', killsPerHour: 300,
@@ -141,7 +141,7 @@ export const MOBS: Mob[] = [
       bz('VOLTA', 1, 1, 'R1'), bz('SORROW', 1, 0.4, 'R1'), bz('PLASMA', 1, 0.4, 'R1'), ah('GHOST_BOOTS', 1, 0.02, 'R1'),
       { id: 'COINS', qty: 1_000_000, chance: 0.01, market: 'coins', src: 'W' },
     ],
-    dataNote: 'RC1 chances (raised from the wiki values).',
+    dataNote: '',
   },
 ]
 

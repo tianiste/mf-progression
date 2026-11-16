@@ -11,7 +11,7 @@ import { MOBS } from '../../shared/mobs'
 
 const loading = ref(false)
 const message = ref(
-  'Fills in combat level, pet score, slayer levels, Booster Cookie, Bestiary, Griffin and Megalodon levels and the Magic Find gear you own. Get a key at developer.hypixel.net; it stays in this browser and is only sent to api.hypixel.net.',
+  'Optional. Key from developer.hypixel.net, kept in your browser.',
 )
 const uuid = ref('')
 const profiles = ref<Profile[]>([])
@@ -81,22 +81,20 @@ async function applyProfile(id: string) {
     const scan = await scanGear(member)
     gear.value = scan
     for (const s of scan.owned) setOwned(s, true)
-    if (!scan.inventoryApi) miss.push('inventories (turn on the Inventory API in your SkyBlock settings)')
+    if (!scan.inventoryApi) miss.push('inventory (API setting off)')
   } catch {
-    miss.push('inventories (could not be read)')
+    miss.push('inventory')
   }
 
   message.value =
-    `Loaded ${p.cute_name || 'profile'}: ${got.join(', ') || 'nothing'}.` +
-    (miss.length ? ` Not in the API response: ${miss.join(', ')}.` : '') +
-    ' Set by hand: account upgrade, Bestiary for mobs without a family, and attribute shard levels (the API does not show them).'
+    `${p.cute_name || 'Profile'}: ${got.join(', ') || 'nothing'}.` + (miss.length ? ` Missing: ${miss.join(', ')}.` : '')
 }
 
 async function load() {
   const name = state.name.trim()
   const key = state.key.trim()
   if (!name || !key) {
-    message.value = 'Enter a player name and your API key first.'
+    message.value = 'Need a name and a key.'
     return
   }
   loading.value = true
@@ -112,8 +110,8 @@ async function load() {
   } catch (e) {
     message.value =
       e instanceof NetworkBlockedError
-        ? 'This page could not reach the internet. Open it in Chrome, Edge or Firefox; some embedded previews block network requests.'
-        : 'Lookup failed: ' + (e instanceof Error ? e.message : String(e))
+        ? "Couldn't reach the internet."
+        : 'Failed: ' + (e instanceof Error ? e.message : String(e))
   } finally {
     loading.value = false
   }
@@ -122,13 +120,13 @@ async function load() {
 
 <template>
   <section class="block">
-    <h2>Load your profile</h2>
+    <h2>Profile</h2>
     <label class="field" for="pname">
-      <span>Player name or UUID</span>
+      <span>Name</span>
       <input id="pname" v-model.trim="state.name" type="text" autocomplete="off" spellcheck="false" />
     </label>
     <label class="field" for="pkey">
-      <span>Hypixel API key</span>
+      <span>API key</span>
       <input id="pkey" v-model.trim="state.key" type="password" autocomplete="off" />
     </label>
     <label v-if="profiles.length" class="field" for="pprof">
@@ -140,26 +138,20 @@ async function load() {
       </select>
     </label>
     <button type="button" class="btn" :disabled="loading" @click="load">
-      {{ loading ? 'Loading…' : 'Load profile' }}
+      {{ loading ? 'Loading…' : 'Load' }}
     </button>
     <p class="lede" aria-live="polite">{{ message }}</p>
 
     <div v-if="gear && gear.inventoryApi" class="gear">
-      <h3>Your Magic Find gear</h3>
-      <p v-if="gear.owned.size" class="lede">
-        Ticked as owned: {{ [...gear.owned].map(sourceName).join(', ') }}.
-      </p>
-      <p v-else class="lede">No Magic Find items found in your inventories.</p>
+      <p v-if="gear.owned.size" class="lede">Found: {{ [...gear.owned].map(sourceName).join(', ') }}</p>
       <template v-if="gear.looting.length">
-        <p class="lede">Looting on your items:</p>
+
         <ul>
           <li v-for="(l, i) in gear.looting.slice(0, 6)" :key="i">
             {{ l.name }}: Looting {{ ROMAN[l.level] ?? l.level }} <span class="where">({{ l.where }})</span>
           </li>
         </ul>
-        <p class="lede">Looting only counts on the item you kill with, so put your best book on that one.</p>
       </template>
-      <p v-else class="lede">None of your items have Looting yet.</p>
     </div>
   </section>
 </template>

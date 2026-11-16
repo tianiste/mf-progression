@@ -23,17 +23,15 @@ function setKph(e: Event) {
 
 const bestiaryLine = computed(() => {
   const m = mob.value
-  if (!m?.bestiary) return m ? 'No Bestiary family for this mob.' : ''
+  if (!m?.bestiary) return ''
   const tier = state.bestiary[m.bestiary]
-  return tier === undefined
-    ? `Bestiary: ${m.bestiary}. Load your profile to fill in your tier.`
-    : `Bestiary: ${m.bestiary}, tier ${tier} (filled in below).`
+  return tier === undefined ? '' : `Bestiary ${tier}`
 })
 </script>
 
 <template>
   <section class="block">
-    <h2>What are you farming?</h2>
+    <h2>Farming</h2>
     <div class="seg" role="group" aria-label="Activity">
       <button
         v-for="a in ACTIVITIES"
@@ -45,7 +43,7 @@ const bestiaryLine = computed(() => {
         {{ a.name }}
       </button>
     </div>
-    <p class="lede">{{ note }}</p>
+    <p v-if="note" class="lede">{{ note }}</p>
 
     <label class="field" for="mob">
       <span>Mob</span>
@@ -53,27 +51,20 @@ const bestiaryLine = computed(() => {
         <option value="">Any mob</option>
         <option v-for="m in mobs" :key="m.id" :value="m.id">{{ m.name }}</option>
       </select>
-      <span class="hint">Picks the matching attribute shard, Witch stew rule and Bestiary, and shows payback time.</span>
     </label>
 
     <template v-if="mob">
-      <p class="lede">Mob types: {{ mob.types.join(', ') }}. {{ bestiaryLine }}</p>
+      <p class="lede">{{ mob.types.join(', ') }}<template v-if="bestiaryLine">. {{ bestiaryLine }}</template></p>
       <label class="field" for="kph">
-        <span>Your kills per hour</span>
+        <span>Kills per hour</span>
         <input id="kph" type="number" min="0" step="1" :value="kph" @change="setKph" />
-        <span class="hint">Starts at a rough guess ({{ mob.killsPerHour }}); set your own for real payback times.</span>
       </label>
       <p v-if="props.value && props.value.perPointPerHour > 0" class="value">
-        Each Magic Find point is worth about <strong class="coin">{{ coins(props.value.perPointPerKill) }}</strong> per kill,
-        <strong class="coin">{{ coins(props.value.perPointPerHour) }}</strong> per hour.
+        1 MF ≈ <strong class="coin">{{ coins(props.value.perPointPerKill) }}</strong>/kill,
+        <strong class="coin">{{ coins(props.value.perPointPerHour) }}</strong>/h
       </p>
-      <p v-else-if="props.value && mob.drops.length" class="lede">No priced drops for this mob right now, so there is no payback time.</p>
-      <p class="lede">
-        {{ mob.dataNote }}
-        <template v-if="props.value && props.value.missing.length">
-          {{ props.value.missing.length }} of {{ props.value.total }} drops have no price right now and are left out.
-        </template>
-      </p>
+      <p v-else-if="props.value && mob.drops.length" class="lede">No drop prices yet.</p>
+      <p v-if="mob.dataNote" class="lede">{{ mob.dataNote }}</p>
     </template>
   </section>
 </template>

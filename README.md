@@ -56,6 +56,16 @@ Drops = base chance × (1 + MF / 100), on every mob drop. Past 100% the extra be
 
 Full source list, values and references: [docs/MECHANICS.md](docs/MECHANICS.md).
 
+## Icons
+
+Item icons in `public/icons/` come, in order, from the official Hypixel SkyBlock Resource Pack, the item's player-head skin (Hypixel API items resource, or NotEnoughUpdates-REPO for attribute shards) drawn as a small 3D cube, and Minecraft's own textures. Anything without one gets the site's star. `src/data/icon-map.json` picks the item for each Magic Find source; to change icons, edit it, download the Hypixel pack from the URL `https://api.hypixel.net/v2/resources/packs` lists and the Minecraft client jar from Mojang's launcher metadata, unzip both outside the repo, and run:
+
+```bash
+node scripts/import-icons.mjs <unzipped Hypixel pack> <unzipped Minecraft client jar>
+```
+
+Community packs such as FurfSky Reborn are not included: they need their authors' permission for this site (`--furfsky <pack>` is there for when that is granted). See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+
 ## Brand
 
 The mark is a ranked ledger: three rows getting longer (pricier) downward, with the cheapest row ending in the Magic Find star. The full logo kit (symbol, small-size cut, lockups, one-colour versions, web icons, presentation board) is in `brand/`; see [brand/GUIDELINES.md](brand/GUIDELINES.md) for colours, clear space and usage. `brand/concepts/` keeps the other two directions that were considered.
@@ -81,4 +91,4 @@ Values follow Release Candidate #2 (12 Nov 2026). The update is scheduled for th
 - Hypixel API: `/v2/skyblock/profiles` (needs a key), `/v2/skyblock/bazaar` (no key)
 - SkyCofl (Coflnet) item prices, from the Worker only
 
-Not affiliated with Hypixel or Mojang.
+Not affiliated with Hypixel or Mojang. Item textures belong to Hypixel Inc. and Mojang Studios; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

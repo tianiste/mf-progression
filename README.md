@@ -44,9 +44,9 @@ Which item prices each Magic Find source is in `shared/price-spec.ts`. Sources w
 
 ## Use
 
-- **Load a player:** enter a player name (or UUID) and your own Hypixel API key from [developer.hypixel.net](https://developer.hypixel.net). Combat level, pet score, slayer levels and Booster Cookie status are filled in. The player needs the Skills and Slayer API settings on. The key is kept only in your browser and sent only to `api.hypixel.net`.
+- **Load a player:** enter a player name (or UUID) and your own Hypixel API key from [developer.hypixel.net](https://developer.hypixel.net). Combat level, pet score, slayer levels and Booster Cookie status are filled in, and the Magic Find gear found in your inventories, armor, equipment, wardrobe, ender chest and accessory bag is ticked as owned, with the Looting level on each item. The player needs the Skills, Slayer and Inventory API settings on. The key is kept only in your browser and sent only to `api.hypixel.net`.
 - **Pick an activity:** Anything, Slayer bosses, Diana, Lava fishing, Sharks or Ghosts. Each adds the sources that only work there.
-- **Tick what you own and fix prices:** the buy list re-sorts by coins per MF. Set a budget to see what fits.
+- **Tick what you own and fix prices:** the buy list re-sorts by coins per Magic Find you actually gain. Only one helmet and one pet item count, so a helmet that is worse than yours drops to "Adds nothing for you", and each row says which item an enchant goes on. Set a budget to see what fits.
 
 Settings are saved in your browser's local storage.
 
@@ -83,7 +83,7 @@ The mark is a ranked ledger: three rows getting longer (pricier) downward, with 
 
 ## Status
 
-Values follow Release Candidate #2 (12 Nov 2026). The update is scheduled for the 17 Nov 2026 maintenance, so numbers and prices may still change. Not yet loaded from the API: bestiary, account upgrades, pet levels, owned items and attribute shard levels (enter these by hand).
+Values follow Release Candidate #2 (12 Nov 2026). The update is scheduled for the 17 Nov 2026 maintenance, so numbers and prices may still change. Not yet loaded from the API: bestiary, account upgrades, pet levels and attribute shard levels (enter these by hand). Gear reading follows the Hypixel API v2 layout but has not been checked against a live profile yet.
 
 ## APIs used
 

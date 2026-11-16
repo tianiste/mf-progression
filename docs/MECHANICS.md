@@ -1,5 +1,13 @@
 # Magic Find mechanics and sources (0.27.3 rework)
 
+Rechecked on 16 Nov 2026 against the Alpha wiki page (hypixelskyblock.minecraft.wiki/w/Magic_Find/Alpha, edited 15 Nov), the Looting, Magma Lord Armor, Crown of Avarice and Sorrow Armor pages, and the Release Candidate 1 and 2 threads.
+
+## Equipment rules the planner follows
+
+- One helmet counts at a time: Clover Helmet, Crown of Greed or Avarice, Magma Lord Helmet and Sorrow armor compete for the helmet slot.
+- One pet is active, so Griffin (King of Kings, Four-Eyed Fish) and Megalodon (Blood Scent) only count while that pet is equipped.
+- Looting counts only on the item you kill with. It can go on swords, longswords, bows, fishing rods, drills, pickaxes, axes and the Gemstone Gauntlet (needs Enchanting III). Habanero Tactics counts only with a slayer weapon against Slayer bosses; Bobbin' Time goes on the fishing rod.
+
 Research notes behind the calculator. Values follow the 0.27.3 alpha threads up to Release Candidate #2 (12 Nov 2026) and must be re-checked against the release patch notes. Prices are Bazaar/AH snapshots from 16 Nov 2026 unless noted.
 
 ## Mechanics after the rework
@@ -39,15 +47,15 @@ Research notes behind the calculator. Values follow the 0.27.3 alpha threads up 
 | Clover Helmet | +5 flat | Reverted to a helmet in RC2. Shen's Auction item. |
 | Extremely Real Shuriken | +5 on tagged mob | |
 | Celestial Mason Jar | +1 (was 3) | |
-| Witch stews (Year of the Witch) | +1 on one mob type each | 10k coins each, event only |
+| Witch stews (Year of the Witch) | +1 to +3 on one mob type each (not Mythological, Pest, Timid, Spooky) | 10k coins each, event only |
 | Mayor Aatrox Pathfinder | +20, doubled on Slayer bosses | Mayor |
 | Mayor Jerry Statspocalypse | +10% | Mayor |
 
 ### Mob-type attribute shards (+5 on that type unless noted)
 
-Lava Flame (+10 Magmatic), Minotaur (Mythological), Black Widow (Arthropod), Drowned (Undead), Wild Hog (Animal), Hideyho (Elusive), Parakeet (Airborne), Billygoat (Frozen), Chuckwalla (Subterranean), Hivethief (Cubic), Wiki Tiki (Construct), Giant Water Bug (Aquatic), Hewver (Critter), Hideonfloor (Woodland), Hideonwall (Arcane), Giant Isopod (on Fishing Islands), Silkbreeze (on Foraging Islands).
+Lava Flame (Magmatic), Minotaur (Mythological), Black Widow (Arthropod), Drowned (Undead), Wild Hog (Animal), Hideyho (Elusive), Parakeet (Airborne), Billygoat (Frozen), Chuckwalla (Subterranean), Hivethief (Cubic), Wiki Tiki (Construct), Giant Water Bug (Aquatic), Hewver (Critter), Hideonfloor (Woodland), Hideonwall (Arcane), Giant Isopod (on Fishing Islands), Silkbreeze (on Foraging Islands).
 
-Bazaar unit prices on 16 Nov 2026 (coins per shard, instant buy): Drowned 12.0k, Hideyho 11.2k, Silkbreeze 13.6k, Parakeet 19.9k, Billygoat 24.8k, Cinderbat 27.3k, Hivethief 31.4k, Wiki Tiki 50.6k, Lava Flame 55.9k, Chuckwalla 60.5k, Minotaur 91.6k, Hideonwall 103k, Hideonfloor 104k, Giant Water Bug 109k, Giant Isopod 120k, Hewver 182k, Wild Hog 253k, Black Widow 510k. Shards needed to max depend on rarity (Legendary = 24); counts for the others were not researched.
+Bazaar unit prices on 16 Nov 2026 (coins per shard, instant buy): Drowned 12.0k, Hideyho 11.2k, Silkbreeze 13.6k, Parakeet 19.9k, Billygoat 24.8k, Cinderbat 27.3k, Hivethief 31.4k, Wiki Tiki 50.6k, Lava Flame 55.9k, Chuckwalla 60.5k, Minotaur 91.6k, Hideonwall 103k, Hideonfloor 104k, Giant Water Bug 109k, Giant Isopod 120k, Hewver 182k, Wild Hog 253k, Black Widow 510k. Each mob-type shard gives +0.5 per level, +5 at level 10 (the Alpha wiki lists Lava Flame as +0.5 to +5, not +10). Shards needed for level 10 by rarity, from NotEnoughUpdates-REPO `attribute_levelling`: Common 106, Uncommon 64, Rare 48, Epic 32, Legendary 24. Cinderbat is Legendary; Minotaur, Lava Flame and most mob-type shards are Rare; Silkbreeze and Giant Isopod (`SHARD_GIANT_ISOPOD`) are Epic.
 
 ### Slayer bosses
 
@@ -57,14 +65,14 @@ Bazaar unit prices on 16 Nov 2026 (coins per shard, instant buy): Drowned 12.0k,
 
 ### Diana (Mythological)
 
-Griffin "King of Kings" +0.1 to +10, Four-Eyed Fish +5 (was 13), Crown of Greed +5, Crown of Avarice +1 per counter digit (max +10), Golden Fleece +5, Diana's Favor (Carnival shop) +1 to +3, Daedalus Blade +0.1 per Mythological Bestiary tier (+0.2 fragged), Minotaur Shard +5.
+Griffin "King of Kings" +0.1 to +10, Four-Eyed Fish +5 (was 13), Crown of Greed +5, Crown of Avarice +1 per counter digit (max +10; it is crafted from the Crown of Greed, and both are helmets), Golden Fleece +5, Diana's Favor (Carnival shop) +1 to +3, Daedalus Blade +0.1 per Mythological Bestiary tier (+0.2 fragged), Minotaur Shard +5.
 
 ### Fishing and others
 
-- Lava: Magma Lord "Lord's Blessing" 2.5/5/7.5/10 on Lava Sea Creatures, Odger's tooth line +1 to +4 on Magmatic, Lava Flame Shard +10.
-- Sharks: Shark Tooth Souvenir +1 to +5, Megalodon "Blood Scent" +0.1 to +10, Denture Collector +1/2/3.
-- Bobbin' Time: +0.6/0.8/1 per nearby fishing player (max 5) on Sea Creatures.
-- Ghosts: Sorrow Armor "Gravekeeper" 5/7.5/10.
+- Lava: Magma Lord "Lord's Blessing" 2.5/5/7.5/10 on Lava Sea Creatures, a tiered set bonus over five pieces including the Magma Lord Necklace (RC2: 5/5 is +10, 4/5 plus a Clover Helmet is +12.5). Odger's tooth line +1 to +4 on Magmatic, Lava Flame Shard +5.
+- Sharks: Shark Tooth Necklace line (Dull to Razor-sharp) +1 to +5, Megalodon "Blood Scent" +0.1 to +10, Denture Collector +1/2/3.
+- Bobbin' Time: scales with nearby fishing players on Sea Creatures; the Alpha wiki lists +1 to +20. The planner assumes +5.
+- Ghosts: Sorrow Armor no longer gives base MF; its "Gravekeeper" tiered bonus gives 5/7.5/10 on Ghosts. Pieces needed per tier are not confirmed.
 - Animals: Researcher Ribery's accessory line +1 to +4.
 - Automatons: Mole "Magnetic Nose" +0.1 to +10.
 - Shriveled Bracelet: +5 on Arachne, Broodmother, Tarantula Broodfather.

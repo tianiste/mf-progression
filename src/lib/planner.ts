@@ -180,3 +180,42 @@ export function plan(state: State, liveCost: Record<string, number>): Plan {
 
   return { now, rows, noGain, budgetMF, budgetCost, everything: progress + setMF(new Set(pool)) }
 }
+
+export interface BreakdownLine {
+  label: string
+  now: number
+  max: number
+  /** How you raise it: free grind, coins, or a time-limited boost. */
+  kind: 'grind' | 'buy' | 'boost'
+  hint?: string
+}
+
+export interface Breakdown {
+  lines: BreakdownLine[]
+  now: number
+  max: number
+}
+
+/** Where the player's Magic Find comes from now, and the most each part can give for this activity. */
+export function breakdown(state: State): Breakdown {
+  const on = appliesTo(state.act)
+  const lines: BreakdownLine[] = []
+  for (const p of PROGRESS.filter(on)) {
+    const max = p.mf(p.max, state.boss)
+    lines.push({ label: p.name, now: p.mf(Math.min(p.max, state.prog[p.id] ?? 0), state.boss), max, kind: 'grind', hint: p.hint })
+  }
+  for (const g of TOGGLES) {
+    lines.push({ label: g.name.replace(/ \(.*\)$/, ''), now: state.tog[g.id] ? g.mf(state.act) : 0, max: g.mf(state.act), kind: 'boost' })
+  }
+  const pool = SOURCES.filter(on)
+  lines.push({
+    label: 'Items, enchants and shards',
+    now: setMF(ownedSet(state)),
+    max: setMF(new Set(pool)),
+    kind: 'buy',
+    hint: 'Everything in the buy list, counting one helmet and one pet item',
+  })
+  const now = lines.reduce((t, l) => t + l.now, 0)
+  const max = lines.reduce((t, l) => t + l.max, 0)
+  return { lines, now, max }
+}

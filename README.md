@@ -47,6 +47,7 @@ Which item prices each Magic Find source is in `shared/price-spec.ts`. Sources w
 - **Load a player:** enter a player name (or UUID) and your own Hypixel API key from [developer.hypixel.net](https://developer.hypixel.net). Combat level, pet score, slayer levels and Booster Cookie status are filled in, and the Magic Find gear found in your inventories, armor, equipment, wardrobe, ender chest and accessory bag is ticked as owned, with the Looting level on each item. The player needs the Skills, Slayer and Inventory API settings on. The key is kept only in your browser and sent only to `api.hypixel.net`.
 - **Pick an activity:** Anything, Slayer bosses, Diana, Lava fishing, Sharks or Ghosts. Each adds the sources that only work there.
 - **Tick what you own and fix prices:** the buy list re-sorts by coins per Magic Find you actually gain. Only one helmet and one pet item count, so a helmet that is worse than yours drops to "Adds nothing for you", and each row says which item an enchant goes on. Set a budget to see what fits.
+- **How far you can go:** the most Magic Find you can reach for the activity, how much of it you have, and what is left to grind, buy or get from boosts.
 
 Settings are saved in your browser's local storage.
 

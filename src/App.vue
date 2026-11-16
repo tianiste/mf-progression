@@ -10,6 +10,7 @@ import PlayerLookup from './components/PlayerLookup.vue'
 import ActivityTabs from './components/ActivityTabs.vue'
 import ProgressPanel from './components/ProgressPanel.vue'
 import BuyList from './components/BuyList.vue'
+import MaxPanel from './components/MaxPanel.vue'
 
 const result = computed(() => plan(state, live.cost))
 
@@ -62,6 +63,7 @@ const priceLine = computed(() => {
     </aside>
     <main>
       <BuyList :plan="result" />
+      <MaxPanel />
     </main>
   </div>
 

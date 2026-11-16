@@ -2,9 +2,28 @@
 
 A single-page Magic Find upgrade planner for Hypixel SkyBlock after the 0.27.3 Magic Find Rework. It lists every Magic Find source, ranks the ones you can buy by coins per Magic Find point, and shows what a budget gets you.
 
-## Use
+## Run it
 
-Download `index.html` and open it in Chrome, Edge or Firefox. No install or build step.
+Needs Node.js 20 or newer.
+
+```bash
+npm install
+npm run dev        # local dev server at http://localhost:5173
+npm run build      # type-check and build to dist/
+```
+
+## Deploy to Cloudflare Workers
+
+The built `dist/` folder is served as static assets by a Worker (see `wrangler.jsonc`).
+
+```bash
+npx wrangler login
+npm run deploy
+```
+
+`npm run cf:dev` serves the built site locally through Wrangler.
+
+## Use
 
 - **Load a player:** enter a player name (or UUID) and your own Hypixel API key from [developer.hypixel.net](https://developer.hypixel.net). Combat level, pet score, slayer levels and Booster Cookie status are filled in. The player needs the Skills and Slayer API settings on. The key is kept only in your browser and sent only to `api.hypixel.net`.
 - **Pick an activity:** Anything, Slayer bosses, Diana, Lava fishing, Sharks or Ghosts. Each adds the sources that only work there.
@@ -17,6 +36,14 @@ Settings are saved in your browser's local storage.
 Drops = base chance × (1 + MF / 100), on every mob drop. Past 100% the extra becomes a chance to double the drop, and the stat caps at 500. Every point is worth the same, so the best upgrade is always the cheapest point you do not have yet.
 
 Full source list, values and references: [docs/MECHANICS.md](docs/MECHANICS.md).
+
+## Project layout
+
+- `src/data/sources.ts`: every Magic Find source, activity, progress stat and toggle
+- `src/lib/planner.ts`: buy order, running totals and budget
+- `src/lib/hypixel.ts`: name to UUID, profile and Bazaar requests, reading profile fields
+- `src/store.ts`: saved settings (browser local storage)
+- `src/components/`: the page sections
 
 ## Status
 

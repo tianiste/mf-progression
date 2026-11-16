@@ -122,11 +122,3 @@ export function readMember(m: Member | undefined): MemberStats {
   return out
 }
 
-/** Instant-buy price of one Bazaar product, or null if missing. No key needed. */
-export async function bazaarBuyPrice(productId: string): Promise<number | null> {
-  const j = await getJSON<{ products?: Record<string, { quick_status?: { buyPrice?: number } }> }>(
-    'https://api.hypixel.net/v2/skyblock/bazaar',
-  )
-  const p = j.products?.[productId]?.quick_status?.buyPrice
-  return typeof p === 'number' && p > 0 ? p : null
-}

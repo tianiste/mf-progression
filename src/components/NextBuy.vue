@@ -26,7 +26,8 @@ const budgetLabel = computed(() => (state.budget > 0 ? coins(state.budget * 1e6)
       <p v-else class="line coin-line">
         {{ coins(next.cost) }} coins, {{ coins(next.coinsPerMF ?? 0) }} per ✯
       </p>
-      <p class="line muted note">{{ live.note[next.source.id] ?? next.source.note }}</p>
+      <p class="line muted note">{{ next.source.note }}</p>
+      <p v-if="live.detail[next.source.id]" class="line muted note live">{{ live.detail[next.source.id] }}</p>
       <p v-if="after.length" class="line muted then">
         Then {{ after.map((r) => r.source.name).join(', then ') }}.
       </p>
@@ -112,6 +113,9 @@ const budgetLabel = computed(() => (state.budget > 0 ? coins(state.budget * 1e6)
   margin-top: 10px;
   font-size: 14px;
   max-width: 52ch;
+}
+.note.live {
+  margin-top: 4px;
 }
 .then {
   margin-top: 6px;

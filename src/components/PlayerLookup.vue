@@ -1,12 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import type { Profile } from '../lib/hypixel'
-import { NetworkBlockedError, bazaarBuyPrice, getProfiles, readMember, uuidOf } from '../lib/hypixel'
+import { NetworkBlockedError, getProfiles, readMember, uuidOf } from '../lib/hypixel'
 import { BOSSES } from '../data/sources'
-import { coins } from '../lib/format'
-import { live, state } from '../store'
-
-const CINDERBAT_SHARDS = 24
+import { state } from '../store'
 
 const loading = ref(false)
 const message = ref(
@@ -46,16 +43,6 @@ function applyProfile(id: string) {
     ' Set by hand: Bestiary, account upgrade, pet levels and the items you own.'
 }
 
-async function refreshBazaar() {
-  try {
-    const each = await bazaarBuyPrice('SHARD_CINDER_BAT')
-    if (each === null) return
-    live.cost.cinder = Math.round(each * CINDERBAT_SHARDS)
-    live.note.cinder = `${CINDERBAT_SHARDS} shards at ${coins(each)} each, live Bazaar price. +0.5 per level.`
-  } catch {
-    // keep the default price
-  }
-}
 
 async function load() {
   const name = state.name.trim()
@@ -74,7 +61,6 @@ async function load() {
     profiles.value = list
     profileId.value = first.profile_id
     applyProfile(first.profile_id)
-    void refreshBazaar()
   } catch (e) {
     message.value =
       e instanceof NetworkBlockedError

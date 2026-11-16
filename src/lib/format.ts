@@ -12,3 +12,13 @@ export function coins(c: number): string {
   if (c >= 1e3) return Math.round(c / 1e3) + 'k'
   return Math.round(c).toString()
 }
+
+/** "just now", "4 min ago", "2 h ago" for an ISO time. */
+export function ago(iso: string): string {
+  const ms = Date.now() - Date.parse(iso)
+  if (!Number.isFinite(ms)) return 'at an unknown time'
+  const min = Math.round(ms / 60_000)
+  if (min < 1) return 'just now'
+  if (min < 60) return `${min} min ago`
+  return `${Math.round(min / 60)} h ago`
+}

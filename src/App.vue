@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted, onUnmounted } from 'vue'
 import { live, state } from './store'
 import { plan } from './lib/planner'
+import { loadPrices } from './lib/prices'
+import { ago } from './lib/format'
 import BrandMark from './components/BrandMark.vue'
 import NextBuy from './components/NextBuy.vue'
 import PlayerLookup from './components/PlayerLookup.vue'
@@ -10,6 +12,23 @@ import ProgressPanel from './components/ProgressPanel.vue'
 import BuyList from './components/BuyList.vue'
 
 const result = computed(() => plan(state, live.cost))
+
+// Prices refresh on load and every five minutes while the page is open.
+let timer: ReturnType<typeof setInterval> | undefined
+onMounted(() => {
+  void loadPrices()
+  timer = setInterval(() => void loadPrices(), 5 * 60_000)
+})
+onUnmounted(() => clearInterval(timer))
+
+const priceLine = computed(() => {
+  const p = live.prices
+  if (p.error) return `Live prices could not be loaded (${p.error}), so the list uses the estimates.`
+  if (!p.origin) return 'Loading live prices…'
+  if (p.origin === 'bazaar-only')
+    return `Bazaar prices from the Hypixel API, ${ago(p.updatedAt)}. Auction House prices are only available on the hosted site; those rows use estimates.`
+  return `Prices updated ${ago(p.updatedAt)}. Bazaar prices from the Hypixel API.`
+})
 </script>
 
 <template>
@@ -56,7 +75,13 @@ const result = computed(() => plan(state, live.cost))
         give Magic Find.
       </li>
     </ul>
-    <p class="fine">Not affiliated with Hypixel or Mojang. Prices are estimates; edit any of them in the list.</p>
+    <p class="fine">
+      {{ priceLine }}
+      <template v-if="live.prices.origin === 'worker'">
+        Auction House data by <a href="https://sky.coflnet.com" rel="noopener">SkyCofl</a>.
+      </template>
+    </p>
+    <p class="fine">Not affiliated with Hypixel or Mojang. You can type over any price in the list.</p>
   </footer>
 </template>
 

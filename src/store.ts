@@ -83,8 +83,23 @@ watch(
   { deep: true },
 )
 
-/** Live prices (coins) and notes that replace the defaults, e.g. from the Bazaar. */
-export const live = reactive<{ cost: Record<string, number>; note: Record<string, string> }>({ cost: {}, note: {} })
+/** Live market prices that replace the default costs (see src/lib/prices.ts). */
+export interface LiveState {
+  /** Live cost in coins per source id; missing = use the default price. */
+  cost: Record<string, number>
+  /** One-line explanation of the live price (or why there is none) per source id. */
+  detail: Record<string, string>
+  /** Which market a live cost came from. */
+  market: Record<string, 'bazaar' | 'ah'>
+  prices: { origin: 'worker' | 'bazaar-only' | null; updatedAt: string; error: string }
+}
+
+export const live = reactive<LiveState>({
+  cost: {},
+  detail: {},
+  market: {},
+  prices: { origin: null, updatedAt: '', error: '' },
+})
 
 /** Ticking a tier also ticks the tiers it builds on; unticking one unticks the tiers above it. */
 export function setOwned(id: string, owned: boolean): void {

@@ -38,8 +38,14 @@ function setPrice(s: Source, e: Event) {
   else state.price[s.id] = n
 }
 
-const noteOf = (s: Source) => live.note[s.id] ?? s.note
-const chipKind = (s: Source) => (s.chip === 'seasonal' || s.chip === 'event' ? 'time' : 'warn')
+const MARKET = { bazaar: 'Bazaar', ah: 'Auction House' } as const
+/** A live price replaces the "old estimate" style warning chips; time-limited chips stay. */
+function chipOf(s: Source): { text: string; kind: string } | null {
+  const m = live.market[s.id]
+  if (m && s.chip !== 'seasonal' && s.chip !== 'event') return { text: 'live ' + MARKET[m], kind: 'live' }
+  if (!s.chip) return null
+  return { text: s.chip, kind: s.chip === 'seasonal' || s.chip === 'event' ? 'time' : 'warn' }
+}
 </script>
 
 <template>
@@ -77,9 +83,10 @@ const chipKind = (s: Source) => (s.chip === 'seasonal' || s.chip === 'event' ? '
           <div class="what">
             <p class="name">
               {{ r.source.name }}
-              <span v-if="r.source.chip" class="chip" :class="chipKind(r.source)">{{ r.source.chip }}</span>
+              <span v-if="chipOf(r.source)" class="chip" :class="chipOf(r.source)!.kind">{{ chipOf(r.source)!.text }}</span>
             </p>
-            <p class="note">{{ noteOf(r.source) }}</p>
+            <p class="note">{{ r.source.note }}</p>
+            <p v-if="live.detail[r.source.id]" class="note detail">{{ live.detail[r.source.id] }}</p>
           </div>
           <span class="gives star num">+{{ r1(r.source.mf) }} ✯</span>
           <input
@@ -215,6 +222,14 @@ h2 {
 .chip.time {
   background: var(--sunk);
   color: var(--violet);
+}
+.chip.live {
+  border: 1px solid var(--good);
+  color: var(--good);
+}
+.detail {
+  color: var(--ink);
+  opacity: 0.85;
 }
 .chip.warn {
   border: 1px solid var(--gold);

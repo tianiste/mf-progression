@@ -31,6 +31,7 @@ const ah = (id: string, qty = 1, rarity?: string): Part => ({ id, qty, market: '
 export const PRICE_SPECS: Record<string, PriceSpec> = {
   loot6: { parts: [bz('ENCHANTMENT_LOOTING_6')], label: 'Looting VI book' },
   loot7: { parts: [bz('ENCHANTMENT_LOOTING_7')], label: 'Looting VII book' },
+  // Legendary shards need 1+1+1+2+2+2+3+3+4+5 = 24 to reach level 10.
   cinder: { parts: [bz('SHARD_CINDER_BAT', 24)], label: '24 Cinderbat Shards' },
   dgift: { parts: [bz('ENCHANTMENT_DIVINE_GIFT_1', 5)], label: '5 × the old Divine Gift I book' },
   pulseR: { parts: [ah('PULSE_RING', 1, 'RARE')], label: 'Rare Pulse Ring' },
@@ -44,12 +45,13 @@ export const PRICE_SPECS: Record<string, PriceSpec> = {
   jar: { parts: [bz('CELESTIAL_MASON_JAR')], label: 'Celestial Mason Jar' },
   wolffur: { parts: [ah('WOLF_FUR_MIXIN')], label: 'Wolf Fur Mixin' },
   haban: { parts: [bz('ENCHANTMENT_ULTIMATE_HABANERO_TACTICS_5')], label: 'Habanero Tactics V book' },
-  minoshard: { parts: [bz('SHARD_MINOTAUR')], qtyUnknown: true, label: 'Minotaur Shard' },
+  // Rare shards need 1+2+3+3+4+4+5+6+8+12 = 48 to reach level 10 (NotEnoughUpdates-REPO attribute_shards.json).
+  minoshard: { parts: [bz('SHARD_MINOTAUR', 48)], label: '48 Minotaur Shards' },
   fish: { parts: [ah('FOUR_EYED_FISH')], label: 'Four-Eyed Fish' },
   greed: { parts: [ah('CROWN_OF_GREED')], label: 'Crown of Greed' },
   avarice: { parts: [ah('CROWN_OF_AVARICE')], label: 'Crown of Avarice (counter not included)' },
   fleece: { parts: [ah('GOLDEN_FLEECE')], label: 'Golden Fleece' },
-  lavashard: { parts: [bz('SHARD_LAVA_FLAME')], qtyUnknown: true, label: 'Lava Flame Shard' },
+  lavashard: { parts: [bz('SHARD_LAVA_FLAME', 48)], label: '48 Lava Flame Shards' },
   magma: {
     parts: [ah('MAGMA_LORD_HELMET'), ah('MAGMA_LORD_CHESTPLATE'), ah('MAGMA_LORD_LEGGINGS'), ah('MAGMA_LORD_BOOTS')],
     label: '4 Magma Lord pieces',

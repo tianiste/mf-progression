@@ -3,6 +3,7 @@ import { computed, onMounted, onUnmounted } from 'vue'
 import { live, state } from './store'
 import { plan } from './lib/planner'
 import { loadPrices } from './lib/prices'
+import { mobById, mobValue } from './lib/payback'
 import { ago } from './lib/format'
 import BrandMark from './components/BrandMark.vue'
 import NextBuy from './components/NextBuy.vue'
@@ -13,6 +14,10 @@ import BuyList from './components/BuyList.vue'
 import MaxPanel from './components/MaxPanel.vue'
 
 const result = computed(() => plan(state, live.cost))
+const value = computed(() => {
+  const mob = state.mob ? mobById(state.mob) : undefined
+  return mob ? mobValue(mob, live.quotes, state.kph[mob.id] ?? mob.killsPerHour) : null
+})
 
 // Prices refresh on load and every five minutes while the page is open.
 let timer: ReturnType<typeof setInterval> | undefined
@@ -52,17 +57,17 @@ const priceLine = computed(() => {
         don't own yet. Tick what you have, set a budget, and the list re-sorts as you go.
       </p>
     </div>
-    <NextBuy :plan="result" />
+    <NextBuy :plan="result" :value="value" />
   </section>
 
   <div class="layout wrap">
     <aside class="setup" aria-label="Your setup">
       <PlayerLookup />
-      <ActivityTabs />
+      <ActivityTabs :value="value" />
       <ProgressPanel />
     </aside>
     <main>
-      <BuyList :plan="result" />
+      <BuyList :plan="result" :value="value" />
       <MaxPanel />
     </main>
   </div>

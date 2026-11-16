@@ -7,10 +7,12 @@ import { appliesTo } from '../lib/planner'
 import { coins, r1 } from '../lib/format'
 import { live, setOwned, state } from '../store'
 import ItemIcon from './ItemIcon.vue'
+import type { MobValue } from '../lib/payback'
+import { formatHours, paybackHours } from '../lib/payback'
 
-const props = defineProps<{ plan: Plan }>()
+const props = defineProps<{ plan: Plan; value: MobValue | null }>()
 
-const owned = computed(() => SOURCES.filter((s) => appliesTo(state.act)(s) && state.own[s.id]))
+const owned = computed(() => SOURCES.filter((s) => appliesTo(state)(s) && state.own[s.id]))
 
 /** Index of the last row the budget covers; the budget marker goes right after it. */
 const lastInBudget = computed(() => {
@@ -95,6 +97,10 @@ function chipOf(s: Source): { text: string; kind: string } | null {
             <p v-if="r.replaces && !r.neededFor" class="note where">
               Replaces your {{ r.replaces.name }} in the {{ SLOT_NAME[r.source.slot!] }} slot, so it adds only the
               difference.
+            </p>
+            <p v-if="value && r.cost && paybackHours(r.cost, r.gain, value) !== null" class="note pay">
+              Earns about {{ coins(r.gain * value.perPointPerHour) }} more per hour on {{ value.mob.name }}, so it pays for itself
+              after {{ formatHours(paybackHours(r.cost, r.gain, value)!) }} of farming.
             </p>
             <p v-if="live.detail[r.source.id]" class="note detail">{{ live.detail[r.source.id] }}</p>
             </div>
@@ -265,6 +271,10 @@ h2 {
 .muted-line {
   font-size: 13px;
   text-align: right;
+}
+.pay {
+  color: var(--good);
+  font-weight: 600;
 }
 .detail {
   color: var(--ink);

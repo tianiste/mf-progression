@@ -5,8 +5,14 @@ import type { Plan } from '../lib/planner'
 import { coins, r1 } from '../lib/format'
 import { live, state } from '../store'
 import ItemIcon from './ItemIcon.vue'
+import type { MobValue } from '../lib/payback'
+import { formatHours, paybackHours } from '../lib/payback'
 
-const props = defineProps<{ plan: Plan }>()
+const props = defineProps<{ plan: Plan; value: MobValue | null }>()
+const pay = computed(() => {
+  const n = props.plan.rows[0]
+  return n && n.cost ? paybackHours(n.cost, n.gain, props.value) : null
+})
 
 const next = computed(() => props.plan.rows[0])
 const after = computed(() => props.plan.rows.slice(1, 3))
@@ -29,6 +35,9 @@ const budgetLabel = computed(() => (state.budget > 0 ? coins(state.budget * 1e6)
       <p v-else-if="next.cost === 0" class="line coin-line">Free: costs only XP or time</p>
       <p v-else class="line coin-line">
         {{ coins(next.cost) }} coins, {{ coins(next.coinsPerMF ?? 0) }} per ✯
+      </p>
+      <p v-if="pay !== null" class="line pay">
+        Pays for itself after {{ formatHours(pay) }} of {{ value!.mob.name }}.
       </p>
       <p v-if="goesOn(next.source, state.act)" class="line where">Goes on {{ goesOn(next.source, state.act) }}.</p>
       <p class="line muted note">{{ next.source.note }}</p>
@@ -114,6 +123,12 @@ const budgetLabel = computed(() => (state.budget > 0 ? coins(state.budget * 1e6)
 }
 .star-line {
   color: var(--tip-star);
+  font-weight: 600;
+}
+.pay {
+  margin-top: 4px;
+  color: var(--tip-star);
+  font-size: 14px;
   font-weight: 600;
 }
 .where {

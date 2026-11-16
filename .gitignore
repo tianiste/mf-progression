@@ -1,0 +1,11 @@
+# Local working notes (kept on disk, not published)
+AGENTS.md
+PROGRESS.md
+
+# Raw API responses and other local data
+local-data/
+*.log
+.env
+.env.*
+.vscode/
+.idea/

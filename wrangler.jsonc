@@ -2,7 +2,7 @@
   // Cloudflare Workers config: serves the built site (dist/) as static assets.
   // Deploy with `npm run deploy` after `npx wrangler login`.
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "mf-progression",
+  "name": "luckledger",
   "compatibility_date": "2026-11-13",
   "assets": {
     "directory": "./dist",

@@ -44,9 +44,11 @@ Which item prices each Magic Find source is in `shared/price-spec.ts`. Sources w
 
 ## Use
 
-- **Load a player:** enter a player name (or UUID) and your own Hypixel API key from [developer.hypixel.net](https://developer.hypixel.net). Combat level, pet score, slayer levels and Booster Cookie status are filled in, and the Magic Find gear found in your inventories, armor, equipment, wardrobe, ender chest and accessory bag is ticked as owned, with the Looting level on each item. The player needs the Skills, Slayer and Inventory API settings on. The key is kept only in your browser and sent only to `api.hypixel.net`.
+- **Load a player:** enter a player name (or UUID) and your own Hypixel API key from [developer.hypixel.net](https://developer.hypixel.net). Combat level, pet score, slayer levels, Booster Cookie, Bestiary tiers and Griffin and Megalodon levels are filled in, and the Magic Find gear found in your inventories, armor, equipment, wardrobe, ender chest and accessory bag is ticked as owned, with the Looting level on each item. The player needs the Skills, Slayer and Inventory API settings on. The key is kept only in your browser and sent only to `api.hypixel.net`.
 - **Pick an activity:** Anything, Slayer bosses, Diana, Lava fishing, Sharks or Ghosts. Each adds the sources that only work there.
+- **Pick the mob:** Revenant Horror, Tarantula, Sven, Voidgloom, Inferno, Minos Inquisitor, Minos Champion, Thunder, Lord Jawbus, Great White Shark or Ghost. The list then shows the attribute shard for that mob's types, hides the Witch stew where it doesn't work, fills Bestiary Magic Find from your profile, and shows how long each upgrade takes to pay for itself.
 - **Tick what you own and fix prices:** the buy list re-sorts by coins per Magic Find you actually gain. Only one helmet and one pet item count, so a helmet that is worse than yours drops to "Adds nothing for you", and each row says which item an enchant goes on. Set a budget to see what fits.
+- **Payback time:** with a mob picked, each row shows the extra coins per hour the upgrade brings and the hours of farming until it has paid for itself. It uses the mob's drop table, live prices and your kills per hour (start from the guess and set your own). Each Magic Find point adds 1% of every drop's base chance, so one point is worth 1% of the mob's expected drop value per kill.
 - **How far you can go:** the most Magic Find you can reach for the activity, how much of it you have, and what is left to grind, buy or get from boosts.
 
 Settings are saved in your browser's local storage.
@@ -80,11 +82,14 @@ The mark is a ranked ledger: three rows getting longer (pricier) downward, with 
 - `src/lib/prices.ts`: loads the price bundle (or Bazaar-only prices) and turns it into a cost per source
 - `src/components/`: the page sections
 - `shared/price-spec.ts`: item ids and quantities that price each source
+- `shared/mobs.ts`: farming mobs with types, Bestiary family and drop tables (with sources)
+- `src/lib/payback.ts`: Magic Find value per kill and payback time
+- `src/lib/progress.ts`: Bestiary tiers and pet levels from the profile
 - `worker/`: the Cloudflare Worker (static site, `/api/prices`, price cron)
 
 ## Status
 
-Values follow Release Candidate #2 (12 Nov 2026). The update is scheduled for the 17 Nov 2026 maintenance, so numbers and prices may still change. Not yet loaded from the API: bestiary, account upgrades, pet levels and attribute shard levels (enter these by hand). Gear reading follows the Hypixel API v2 layout but has not been checked against a live profile yet.
+Values follow Release Candidate #2 (12 Nov 2026). The update is scheduled for the 17 Nov 2026 maintenance, so numbers and prices may still change. Not loaded from the API: account upgrades and attribute shard levels (the API does not show them; enter these by hand). Gear reading follows the Hypixel API v2 layout but has not been checked against a live profile yet.
 
 ## APIs used
 

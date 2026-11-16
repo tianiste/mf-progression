@@ -2,6 +2,16 @@
 
 Rechecked on 16 Nov 2026 against the Alpha wiki page (hypixelskyblock.minecraft.wiki/w/Magic_Find/Alpha, edited 15 Nov), the Looting, Magma Lord Armor, Crown of Avarice and Sorrow Armor pages, and the Release Candidate 1 and 2 threads.
 
+## Payback time
+
+One Magic Find point adds 1% of each drop's base chance (overflow past 100% becomes a chance to double, so the expected count stays linear). Per kill, a point is worth 1% of the mob's expected drop value: sum of chance × quantity × price, divided by 100. An upgrade that adds G points earns G × that × kills per hour, and pays for itself after cost ÷ that many hours.
+
+Drop tables (`shared/mobs.ts`) come from the wiki (0.27.2 values) with the Release Candidate 1/2 changes applied where they are listed. The rework's per-boss slayer tables were only in spreadsheets we could not read, so slayer numbers are partly pre-rework. Revenant Horror has no table (the wiki only gives weights). Rare dyes and runes are left out. Disputed chances (Chimera from Inquisitors, Minos Relic, Magma Lord Fragment from Jawbus) keep the release-candidate value and a note.
+
+## Bestiary
+
+Bestiary Magic Find is assumed to be +3 per tier on that family (the Alpha wiki lists +3 to +75). Tiers come from `bestiary.kills` in the profile with NotEnoughUpdates-REPO brackets and caps.
+
 ## Equipment rules the planner follows
 
 - One helmet counts at a time: Clover Helmet, Crown of Greed or Avarice, Magma Lord Helmet and Sorrow armor compete for the helmet slot.

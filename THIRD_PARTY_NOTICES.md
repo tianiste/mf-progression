@@ -14,7 +14,7 @@ Copyright © 2026 Hypixel Inc. Used under the Hypixel SkyBlock Resource Pack Lic
 
 ## NotEnoughUpdates-REPO
 
-Attribute shard data (rarities and shards needed per level, used for the shard costs) and the attribute shard head skins come from [NotEnoughUpdates-REPO](https://github.com/NotEnoughUpdates/NotEnoughUpdates-REPO) at commit `10f61150886e2c4a7151aeed0c2172bc0e4d2eca` (`constants/attribute_shards.json`, `items/ATTRIBUTE_SHARD_*.json`). The skins themselves are Hypixel's art.
+Attribute shard data (rarities and shards needed per level, used for the shard costs), Bestiary brackets and caps (`src/data/bestiary.json`, trimmed), pet levelling tables (`src/data/pet-levels.json`, trimmed) and the attribute shard head skins come from [NotEnoughUpdates-REPO](https://github.com/NotEnoughUpdates/NotEnoughUpdates-REPO) at commit `10f61150886e2c4a7151aeed0c2172bc0e4d2eca` (`constants/attribute_shards.json`, `constants/bestiary.json`, `constants/pets.json`, `items/ATTRIBUTE_SHARD_*.json`). The skins themselves are Hypixel's art.
 
 > MIT License
 >

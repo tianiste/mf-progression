@@ -9,3 +9,12 @@ local-data/
 .env.*
 .vscode/
 .idea/
+
+# Build output and dependencies
+node_modules/
+dist/
+.wrangler/
+.dev.vars
+
+# Local editor/agent settings
+.claude/

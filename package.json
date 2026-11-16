@@ -9,7 +9,9 @@
     "preview": "vite preview",
     "typecheck": "vue-tsc -b",
     "deploy": "npm run build && wrangler deploy",
-    "cf:dev": "npm run build && wrangler dev"
+    "cf:dev": "npm run build && wrangler dev --test-scheduled",
+    "dev:api": "wrangler dev --test-scheduled",
+    "cf:types": "wrangler types worker/worker-configuration.d.ts"
   },
   "dependencies": {
     "vue": "^3.5.45"

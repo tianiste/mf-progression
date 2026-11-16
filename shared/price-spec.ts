@@ -1,3 +1,5 @@
+import { dropQuotes } from './mobs'
+
 // How each Magic Find source is priced from market data. Shared by the Worker (which ids to fetch)
 // and the page (how to turn the price bundle into a cost per source). Item ids were checked against
 // the live Hypixel items resource and Bazaar on 2026-11-16.
@@ -61,6 +63,20 @@ export const PRICE_SPECS: Record<string, PriceSpec> = {
   odger: { parts: [ah('ODGERS_DIAMOND_TOOTH')], label: "Odger's Diamond Tooth" },
   bobbinL: { parts: [bz('ENCHANTMENT_ULTIMATE_BOBBIN_TIME_5')], label: "Bobbin' Time V book" },
   bobbinS: { parts: [bz('ENCHANTMENT_ULTIMATE_BOBBIN_TIME_5')], label: "Bobbin' Time V book" },
+  // Mob-type shards: all Rare, 48 to reach level 10.
+  shard_undead: { parts: [bz('SHARD_DROWNED', 48)], label: '48 Drowned Shards' },
+  shard_arthropod: { parts: [bz('SHARD_BLACK_WIDOW', 48)], label: '48 Black Widow Shards' },
+  shard_animal: { parts: [bz('SHARD_WILD_HOG', 48)], label: '48 Wild Hog Shards' },
+  shard_elusive: { parts: [bz('SHARD_HIDEYHO', 48)], label: '48 Hideyho Shards' },
+  shard_airborne: { parts: [bz('SHARD_PARAKEET', 48)], label: '48 Parakeet Shards' },
+  shard_frozen: { parts: [bz('SHARD_BILLYGOAT', 48)], label: '48 Billygoat Shards' },
+  shard_subterranean: { parts: [bz('SHARD_CHUCKWALLA', 48)], label: '48 Chuckwalla Shards' },
+  shard_cubic: { parts: [bz('SHARD_HIVETHIEF', 48)], label: '48 Hivethief Shards' },
+  shard_construct: { parts: [bz('SHARD_WIKI_TIKI', 48)], label: '48 Wiki Tiki Shards' },
+  shard_aquatic: { parts: [bz('SHARD_GIANT_WATER_BUG', 48)], label: '48 Giant Water Bug Shards' },
+  shard_critter: { parts: [bz('SHARD_HEWVER', 48)], label: '48 Hewver Shards' },
+  shard_woodland: { parts: [bz('SHARD_HIDEONFLOOR', 48)], label: '48 Hideonfloor Shards' },
+  shard_arcane: { parts: [bz('SHARD_HIDEONWALL', 48)], label: '48 Hideonwall Shards' },
   sorrow: {
     parts: [ah('SORROW_HELMET'), ah('SORROW_CHESTPLATE'), ah('SORROW_LEGGINGS'), ah('SORROW_BOOTS')],
     label: '4 Sorrow Armor pieces',
@@ -79,6 +95,10 @@ export function wantedQuotes(): { bazaar: string[]; ah: Part[] } {
       if (p.market === 'bazaar') bazaar.add(p.id)
       else ahParts.set(quoteKey(p), p)
     }
+  }
+  for (const d of dropQuotes()) {
+    if (d.market === 'bazaar') bazaar.add(d.id)
+    else ahParts.set(d.id, { id: d.id, qty: 1, market: 'ah' })
   }
   return { bazaar: [...bazaar], ah: [...ahParts.values()] }
 }

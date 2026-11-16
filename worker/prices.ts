@@ -11,8 +11,8 @@ import { quoteKey, wantedQuotes } from '../shared/price-spec'
 export const USER_AGENT = 'Luckledger (github.com/tianiste/mf-progression)'
 const BUNDLE_KEY = 'bundle'
 const BAZAAR_EVERY_MS = 9 * 60_000
-const AH_EVERY_MS = 20 * 60_000
-const AH_PER_RUN = 10
+const AH_EVERY_MS = 30 * 60_000
+const AH_PER_RUN = 14
 const AH_GAP_MS = 1_100
 /** A quote that could not be refreshed for this long is dropped, so the page shows the default instead of a stale price. */
 const DROP_AFTER_MS = 24 * 3600_000

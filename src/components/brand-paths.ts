@@ -1,3 +1,3 @@
-// Luckledger mark geometry (256 x 256). Source: brand/luckledger-mark.svg
+// Luckledger mark geometry (256 x 256). Source: brand/symbol/luckledger-symbol.svg
 export const ROWS = 'M20 62.17H114.00v30H20Z M20 129.83h176v30H20Z M20 197.50h216v30H20Z'
 export const STAR = 'M114.00,29.00 L124.78,62.17 L159.65,62.17 L131.44,82.67 L142.21,115.83 L114.00,95.33 L85.79,115.83 L96.56,82.67 L68.35,62.17 L103.22,62.17 Z'

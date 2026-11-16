@@ -1,6 +1,6 @@
 # Luckledger
 
-![Luckledger mark](brand/luckledger-mark.svg)
+![Luckledger](brand/export/luckledger-horizontal.png)
 
 Luckledger is a Magic Find upgrade planner for Hypixel SkyBlock after the 0.27.3 Magic Find Rework. It lists every Magic Find source, ranks the ones you can buy by coins per Magic Find point, and shows what a budget gets you.
 
@@ -41,7 +41,7 @@ Full source list, values and references: [docs/MECHANICS.md](docs/MECHANICS.md).
 
 ## Brand
 
-The mark is a ranked ledger: three rows getting longer (pricier) downward, with the cheapest row ending in the Magic Find star. Files are in `brand/` (`luckledger-mark.svg` in colour, `luckledger-mark-black.svg` in one colour). `brand/concepts/` keeps the other two directions that were considered.
+The mark is a ranked ledger: three rows getting longer (pricier) downward, with the cheapest row ending in the Magic Find star. The full logo kit (symbol, small-size cut, lockups, one-colour versions, web icons, presentation board) is in `brand/`; see [brand/GUIDELINES.md](brand/GUIDELINES.md) for colours, clear space and usage. `brand/concepts/` keeps the other two directions that were considered.
 
 ## Project layout
 

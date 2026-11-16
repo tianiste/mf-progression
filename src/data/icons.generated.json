@@ -60,6 +60,11 @@
    "size": 16,
    "source": "hypixel"
   },
+  "MAGMA_LORD_CHESTPLATE": {
+   "file": "minecraft/leather_chestplate.png",
+   "size": 16,
+   "source": "minecraft"
+  },
   "MAGMA_LORD_HELMET": {
    "file": "heads/magma_lord_helmet.png",
    "size": 32,
@@ -77,6 +82,11 @@
   },
   "PULSE_RING": {
    "file": "heads/pulse_ring.png",
+   "size": 32,
+   "source": "head"
+  },
+  "RAZOR_SHARP_SHARK_TOOTH_NECKLACE": {
+   "file": "heads/razor_sharp_shark_tooth_necklace.png",
    "size": 32,
    "source": "head"
   },

@@ -31,14 +31,39 @@ export interface Source {
   /** id of the tier this one upgrades; it can never be bought before that tier. */
   need?: string
   chip?: ChipKind
+  /**
+   * Equipment slot it takes. Only one item per slot counts, so a helmet that gives less than the
+   * helmet you already have adds nothing.
+   */
+  slot?: Slot
+  /** Which item the upgrade goes on, if that matters; per activity where it differs. */
+  goesOn?: string | Partial<Record<ActivityId, string>>
+}
+
+export type Slot = 'helmet' | 'petItem'
+export const SLOT_NAME: Record<Slot, string> = { helmet: 'helmet', petItem: 'pet item' }
+
+const LOOTING_ON: Partial<Record<ActivityId, string>> = {
+  all: 'the weapon you kill with (sword, longsword, bow, fishing rod, drill, pickaxe, axe or Gemstone Gauntlet)',
+  slayer: 'your slayer weapon',
+  diana: 'your Daedalus Blade, which also gives Magic Find from Mythological Bestiary',
+  lava: 'the weapon or rod you kill Lava Sea Creatures with',
+  shark: 'the weapon or rod you kill Sharks with',
+  ghost: 'the weapon you kill Ghosts with',
+}
+
+/** Where a source goes for the chosen activity, or undefined when it doesn't matter. */
+export function goesOn(s: Source, act: ActivityId): string | undefined {
+  if (!s.goesOn) return undefined
+  return typeof s.goesOn === 'string' ? s.goesOn : (s.goesOn[act] ?? s.goesOn.all)
 }
 
 export const SOURCES: Source[] = [
-  { id: 'loot5', act: 'all', name: 'Looting V on your weapon', mf: 15, cost: 0, note: 'Enchanting table, XP only. Works on swords, bows, rods, drills, axes. Old Looting, Luck and Chance convert to it.' },
-  { id: 'loot6', act: 'all', need: 'loot5', name: 'Looting VI', mf: 5, cost: 245_000, chip: 'seasonal', note: '+20 total. 25 North Stars from Einary (about 9.8k per star before the update).' },
-  { id: 'loot7', act: 'all', need: 'loot6', name: 'Looting VII', mf: 5, cost: null, chip: 'no market yet', note: '+25 total. Sphinx drop, 0.25% (Legendary Griffin) or 0.5% (Mythic). Temporary source.' },
+  { id: 'loot5', act: 'all', name: 'Looting V on your weapon', mf: 15, cost: 0, goesOn: LOOTING_ON, note: 'Enchanting table, XP only (needs Enchanting III). Old Looting, Luck and Chance convert to it.' },
+  { id: 'loot6', act: 'all', need: 'loot5', name: 'Looting VI', mf: 5, cost: 245_000, chip: 'seasonal', goesOn: LOOTING_ON, note: '+20 total. 25 North Stars from Einary (about 9.8k per star before the update).' },
+  { id: 'loot7', act: 'all', need: 'loot6', name: 'Looting VII', mf: 5, cost: null, chip: 'no market yet', goesOn: LOOTING_ON, note: '+25 total. 0.5% Sphinx drop. Temporary source.' },
   { id: 'cinder', act: 'all', name: 'Cinderbat Shard attribute to level 10', mf: 5, cost: 864_000, note: 'Legendary shard: 24 to max, +0.5 per level.' },
-  { id: 'stew', act: 'all', name: 'Witch stew for your mob type', mf: 1, cost: 10_000, chip: 'event', note: '10k coins each during Year of the Witch. +1 on one mob type, one stew per type.' },
+  { id: 'stew', act: 'all', name: 'Witch stew for your mob type', mf: 1, cost: 10_000, chip: 'event', note: '10k coins each during Year of the Witch. +1 to +3 on one mob type (not Mythological, Pest, Timid or Spooky), one stew per type.' },
   { id: 'typeshard', act: 'all', name: 'Mob-type shard for your target', mf: 5, cost: null, note: '+5 on one mob type, for example Black Widow (Arthropod), Drowned (Undead), Wild Hog (Animal), Hideyho (Elusive), Parakeet (Airborne). Most are Rare shards: 48 to max.' },
   { id: 'dgift', act: 'all', name: 'Divine Gift ×5', mf: 5, cost: 125_000_000, chip: 'verify price', note: 'Now a consumable, +1 each, max 5, Regalia Room. Priced here at the old 25M book price. Old Divine Gift books refund 1, 2 or 4.' },
   { id: 'pulseR', act: 'all', name: 'Pulse Ring (Rare)', mf: 1, cost: 7_500_000, chip: 'old estimate', note: 'Ring values doubled: 0.5 / 1 / 1.5 / 2 by rarity.' },
@@ -49,30 +74,31 @@ export const SOURCES: Source[] = [
   { id: 'cake', act: 'all', name: 'Century Cake of the Next Dungeon Floor', mf: 1, cost: null, note: 'Temporary buff when eaten.' },
   { id: 'beacon', act: 'all', name: 'Private Island Beacon, max tier', mf: 3, cost: null, note: 'Halved: +0.5 per tier, +3 at the top.' },
   { id: 'ladder', act: 'all', name: "Necron's Ladder", mf: 1, cost: null, note: 'Needs 3 Necron Handle drops while holding it.' },
-  { id: 'clover', act: 'all', name: 'Clover Helmet', mf: 5, cost: null, note: "Kept as a helmet for now, flat +5. Shen's Auction item." },
+  { id: 'clover', act: 'all', name: 'Clover Helmet', mf: 5, cost: null, slot: 'helmet', note: "Kept as a helmet for now, flat +5. Shen's Auction item." },
   { id: 'shuriken', act: 'all', name: 'Extremely Real Shuriken', mf: 5, cost: null, note: '+5 on the mob you tag with it.' },
   { id: 'jar', act: 'all', name: 'Celestial Mason Jar', mf: 1, cost: null, note: 'Cut from 3 to 1.' },
 
   { id: 'wolffur', act: 'slayer', name: 'Wolf Fur Mixin', mf: 5, cost: null, note: '+5 on Slayer bosses.' },
-  { id: 'haban', act: 'slayer', name: 'Habanero Tactics V', mf: 5, cost: null, note: 'Slayer weapon against Slayer bosses only. Level IV gives +4.' },
+  { id: 'haban', act: 'slayer', name: 'Habanero Tactics V', mf: 5, cost: null, goesOn: 'your slayer weapon', note: 'Counts only with a slayer weapon against Slayer bosses. Level IV gives +4.' },
 
   { id: 'minoshard', act: 'diana', name: 'Minotaur Shard attribute to level 10', mf: 5, cost: null, note: '+5 on Mythological mobs. Rare shard: 48 to max.' },
-  { id: 'fish', act: 'diana', name: 'Four-Eyed Fish on Griffin', mf: 5, cost: null, note: 'Was +13.' },
-  { id: 'greed', act: 'diana', name: 'Crown of Greed', mf: 5, cost: null, note: 'Was +10.' },
-  { id: 'avarice', act: 'diana', need: 'greed', name: 'Crown of Avarice, full counter', mf: 5, cost: null, note: '+1 per counter digit, +10 at max.' },
+  { id: 'fish', act: 'diana', name: 'Four-Eyed Fish on Griffin', mf: 5, cost: null, slot: 'petItem', goesOn: 'your Griffin pet, which must be the active pet', note: 'Pet item. Was +13.' },
+  { id: 'greed', act: 'diana', name: 'Crown of Greed', mf: 5, cost: null, slot: 'helmet', note: '+5 on Mythological mobs (was +10).' },
+  { id: 'avarice', act: 'diana', need: 'greed', name: 'Crown of Avarice, full counter', mf: 5, cost: null, slot: 'helmet', note: 'Upgrade of the Crown of Greed (crafted from it). +1 per counter digit, +10 at max, so +5 over Greed.' },
   { id: 'fleece', act: 'diana', name: 'Golden Fleece', mf: 5, cost: null, note: '+5 on Mythological mobs.' },
   { id: 'favor', act: 'diana', name: "Diana's Favor (Carnival shop)", mf: 3, cost: null, note: 'Bought with Carnival tickets.' },
 
-  { id: 'lavashard', act: 'lava', name: 'Lava Flame Shard attribute to level 10', mf: 10, cost: null, note: '+10 on Magmatic mobs, the biggest shard bonus. Rare shard: 48 to max.' },
-  { id: 'magma', act: 'lava', name: 'Magma Lord Armor 5/5', mf: 10, cost: null, note: "Lord's Blessing: 2.5 / 5 / 7.5 / 10 on Lava Sea Creatures." },
+  { id: 'lavashard', act: 'lava', name: 'Lava Flame Shard attribute to level 10', mf: 5, cost: null, note: '+0.5 per level on Magmatic mobs, +5 at 10. Rare shard: 48 to max.' },
+  { id: 'magma4', act: 'lava', name: 'Magma Lord Armor 4/5, no helmet', mf: 7.5, cost: null, note: "Chestplate, leggings, boots and the Magma Lord Necklace. Lord's Blessing on Lava Sea Creatures: +7.5 at 4 pieces, +10 at 5." },
+  { id: 'magma5', act: 'lava', need: 'magma4', name: 'Magma Lord Helmet (5/5)', mf: 2.5, cost: null, slot: 'helmet', note: 'The fifth piece adds +2.5. A Clover Helmet gives +5 instead, so 4/5 with a Clover Helmet (+12.5) beats 5/5 (+10).' },
   { id: 'odger', act: 'lava', name: "Odger's Diamond Tooth", mf: 4, cost: null, note: '+1 to +4 on Magmatic mobs by tier.' },
-  { id: 'bobbinL', act: 'lava', name: "Bobbin' Time V", mf: 5, cost: null, note: '+1 per nearby fishing player, up to 5.' },
+  { id: 'bobbinL', act: 'lava', name: "Bobbin' Time V", mf: 5, cost: null, goesOn: 'your fishing rod', note: 'Scales with nearby fishing players; +5 is a typical party. The wiki lists up to +20.' },
 
-  { id: 'souvenir', act: 'shark', name: 'Razor-Sharp Shark Tooth Souvenir', mf: 5, cost: null, note: '+1 to +5 by tier.' },
+  { id: 'sharktooth', act: 'shark', name: 'Razor-sharp Shark Tooth Necklace', mf: 5, cost: null, note: 'Top of the Shark Tooth Necklace line, +1 to +5 by tier.' },
   { id: 'denture', act: 'shark', name: 'Denture Collector (Carnival shop)', mf: 3, cost: null, note: '+1 / 2 / 3.' },
-  { id: 'bobbinS', act: 'shark', name: "Bobbin' Time V", mf: 5, cost: null, note: '+1 per nearby fishing player, up to 5.' },
+  { id: 'bobbinS', act: 'shark', name: "Bobbin' Time V", mf: 5, cost: null, goesOn: 'your fishing rod', note: 'Scales with nearby fishing players; +5 is a typical party. The wiki lists up to +20.' },
 
-  { id: 'sorrow', act: 'ghost', name: 'Sorrow Armor, full Gravekeeper bonus', mf: 10, cost: null, note: '5 / 7.5 / 10 on Ghosts. Base Magic Find removed.' },
+  { id: 'sorrow', act: 'ghost', name: 'Sorrow Armor, full Gravekeeper bonus', mf: 10, cost: null, slot: 'helmet', note: 'Gravekeeper: +5 / 7.5 / 10 on Ghosts. Base Magic Find removed. How many pieces each tier needs is not confirmed yet.' },
 ]
 
 export type BossId = 'zombie' | 'spider' | 'wolf' | 'enderman' | 'blaze' | 'vampire'
@@ -121,9 +147,9 @@ export const PROGRESS: ProgressStat[] = [
   { id: 'best', name: 'Bestiary MF on this mob', max: 75, act: 'all', mf: (v) => v, hint: '+45 at tier 15, +75 at 25' },
   { id: 'codex', name: "Beastslayer's Codex Mythic (1 = yes)", max: 1, act: 'all', mf: (v) => v, hint: '+1 at Bestiary Milestone 300' },
   { id: 'slv', name: 'Slayer level for this boss', max: 9, act: 'slayer', mf: slayerMF, hint: '+1 per level, +2 at the top (9, or 5 in the Rift)' },
-  { id: 'griffin', name: 'Griffin level (Legendary+)', max: 100, act: 'diana', mf: (v) => v * 0.1, hint: 'King of Kings, up to +10' },
-  { id: 'myth', name: 'Mythological Bestiary tiers', max: 230, act: 'diana', mf: (v) => v * 0.1, hint: 'Daedalus Blade, +0.1 per tier' },
-  { id: 'mega', name: 'Megalodon level', max: 100, act: 'shark', mf: (v) => v * 0.1, hint: 'Blood Scent, up to +10' },
+  { id: 'griffin', name: 'Griffin level (Legendary+)', max: 100, act: 'diana', mf: (v) => v * 0.1, hint: 'King of Kings, up to +10, only as the active pet' },
+  { id: 'myth', name: 'Mythological Bestiary tiers', max: 230, act: 'diana', mf: (v) => v * 0.1, hint: 'Daedalus Blade, +0.1 per tier (doubled when fragged)' },
+  { id: 'mega', name: 'Megalodon level', max: 100, act: 'shark', mf: (v) => v * 0.1, hint: 'Blood Scent, up to +10, only as the active pet' },
 ]
 
 export type ToggleId = 'cookie' | 'godpot' | 'aatrox'

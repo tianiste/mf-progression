@@ -52,10 +52,12 @@ export const PRICE_SPECS: Record<string, PriceSpec> = {
   avarice: { parts: [ah('CROWN_OF_AVARICE')], label: 'Crown of Avarice (counter not included)' },
   fleece: { parts: [ah('GOLDEN_FLEECE')], label: 'Golden Fleece' },
   lavashard: { parts: [bz('SHARD_LAVA_FLAME', 48)], label: '48 Lava Flame Shards' },
-  magma: {
-    parts: [ah('MAGMA_LORD_HELMET'), ah('MAGMA_LORD_CHESTPLATE'), ah('MAGMA_LORD_LEGGINGS'), ah('MAGMA_LORD_BOOTS')],
-    label: '4 Magma Lord pieces',
+  magma4: {
+    parts: [ah('MAGMA_LORD_CHESTPLATE'), ah('MAGMA_LORD_LEGGINGS'), ah('MAGMA_LORD_BOOTS'), ah('MAGMA_LORD_GAUNTLET')],
+    label: 'Magma Lord chestplate, leggings, boots and necklace',
   },
+  magma5: { parts: [ah('MAGMA_LORD_HELMET')], label: 'Magma Lord Helmet' },
+  sharktooth: { parts: [ah('RAZOR_SHARP_SHARK_TOOTH_NECKLACE')], label: 'Razor-sharp Shark Tooth Necklace' },
   odger: { parts: [ah('ODGERS_DIAMOND_TOOTH')], label: "Odger's Diamond Tooth" },
   bobbinL: { parts: [bz('ENCHANTMENT_ULTIMATE_BOBBIN_TIME_5')], label: "Bobbin' Time V book" },
   bobbinS: { parts: [bz('ENCHANTMENT_ULTIMATE_BOBBIN_TIME_5')], label: "Bobbin' Time V book" },

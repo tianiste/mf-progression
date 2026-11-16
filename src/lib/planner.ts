@@ -1,8 +1,25 @@
 import type { ActivityId, Slot, Source } from '../data/sources'
 import { MF_CAP, PROGRESS, SOURCES, TOGGLES } from '../data/sources'
 import type { State } from '../store'
+import { MOBS } from '../../shared/mobs'
 
-export const appliesTo = (act: ActivityId) => (x: { act: ActivityId }) => x.act === 'all' || x.act === act
+type Filterable = { act: ActivityId; mobType?: string; onlyWithoutMob?: boolean; notForTypes?: string[] }
+
+/**
+ * Which sources and stats count for the chosen activity and mob: the activity's own plus the "all" ones; mob-type
+ * shards only for a picked mob of that type (activity shards like Minotaur show without a mob); the generic shard row
+ * only while no mob is picked; nothing that does not work on the mob's types.
+ */
+export function appliesTo(state: { act: ActivityId; mob?: string }) {
+  const mob = state.mob ? MOBS.find((m) => m.id === state.mob) : undefined
+  return (x: Filterable): boolean => {
+    if (x.act !== 'all' && x.act !== state.act) return false
+    if (x.onlyWithoutMob && mob) return false
+    if (x.mobType) return mob ? mob.types.includes(x.mobType) : x.act !== 'all'
+    if (x.notForTypes && mob && mob.types.some((t) => x.notForTypes!.includes(t))) return false
+    return true
+  }
+}
 
 const byId = new Map(SOURCES.map((s) => [s.id, s]))
 
@@ -42,12 +59,12 @@ function setMF(set: Set<Source>): number {
 /** MF from progress and toggles (no coin price). */
 function progressMF(state: State): number {
   let t = 0
-  for (const p of PROGRESS.filter(appliesTo(state.act))) t += p.mf(Math.min(p.max, state.prog[p.id] ?? 0), state.boss)
+  for (const p of PROGRESS.filter(appliesTo(state))) t += p.mf(Math.min(p.max, state.prog[p.id] ?? 0), state.boss)
   for (const g of TOGGLES) if (state.tog[g.id]) t += g.mf(state.act)
   return t
 }
 
-const ownedSet = (state: State) => new Set(SOURCES.filter((s) => appliesTo(state.act)(s) && state.own[s.id]))
+const ownedSet = (state: State) => new Set(SOURCES.filter((s) => appliesTo(state)(s) && state.own[s.id]))
 
 /** Magic Find the player already has for the chosen activity. */
 export function baseMF(state: State): number {
@@ -87,7 +104,7 @@ export interface Plan {
  * Unpriced sources follow; sources that can never add anything are listed apart.
  */
 export function plan(state: State, liveCost: Record<string, number>): Plan {
-  const pool = SOURCES.filter(appliesTo(state.act))
+  const pool = SOURCES.filter(appliesTo(state))
   const have = ownedSet(state)
   const progress = progressMF(state)
   const now = progress + setMF(have)
@@ -198,7 +215,7 @@ export interface Breakdown {
 
 /** Where the player's Magic Find comes from now, and the most each part can give for this activity. */
 export function breakdown(state: State): Breakdown {
-  const on = appliesTo(state.act)
+  const on = appliesTo(state)
   const lines: BreakdownLine[] = []
   for (const p of PROGRESS.filter(on)) {
     const max = p.mf(p.max, state.boss)

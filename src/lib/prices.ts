@@ -65,6 +65,7 @@ export function applyBundle(bundle: PriceBundle, origin: PriceOrigin): void {
   live.cost = cost
   live.detail = detail
   live.market = market
+  live.quotes = bundle.quotes
   live.prices = { origin, updatedAt: bundle.updatedAt, error: '' }
 }
 

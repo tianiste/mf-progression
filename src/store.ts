@@ -1,6 +1,9 @@
 import { reactive, watch } from 'vue'
 import type { ActivityId, BossId, ProgressId, ToggleId } from './data/sources'
 import { ACTIVITIES, BOSSES, SOURCES } from './data/sources'
+import { MOBS } from '../shared/mobs'
+import type { Quote } from '../shared/price-spec'
+import { BESTIARY_MF_PER_TIER } from './lib/progress'
 
 export interface State {
   act: ActivityId
@@ -15,12 +18,18 @@ export interface State {
   slayers: Partial<Record<BossId, number>>
   name: string
   key: string
+  /** Picked mob id from shared/mobs.ts, '' for none. */
+  mob: string
+  /** Kills per hour per mob id, set by the player. */
+  kph: Record<string, number>
+  /** Bestiary tier per family, read from the API. */
+  bestiary: Record<string, number>
 }
 
 const STORAGE_KEY = 'mfpath'
 
 function defaults(): State {
-  return { act: 'all', own: {}, price: {}, prog: {}, tog: { cookie: true }, budget: 50, boss: 'zombie', slayers: {}, name: '', key: '' }
+  return { act: 'all', own: {}, price: {}, prog: {}, tog: { cookie: true }, budget: 50, boss: 'zombie', slayers: {}, name: '', key: '', mob: '', kph: {}, bestiary: {} }
 }
 
 const num = (v: unknown): number | undefined => {
@@ -66,6 +75,9 @@ function load(): State {
   s.budget = num(raw.budget) ?? s.budget
   if (typeof raw.name === 'string') s.name = raw.name
   if (typeof raw.key === 'string') s.key = raw.key
+  if (typeof raw.mob === 'string' && MOBS.some((m) => m.id === raw.mob)) s.mob = raw.mob
+  s.kph = numberMap(raw.kph) as Record<string, number>
+  s.bestiary = numberMap(raw.bestiary) as Record<string, number>
   return s
 }
 
@@ -91,6 +103,8 @@ export interface LiveState {
   detail: Record<string, string>
   /** Which market a live cost came from. */
   market: Record<string, 'bazaar' | 'ah'>
+  /** Raw quotes from the price bundle (drop items included), by quote key. */
+  quotes: Record<string, Quote>
   prices: { origin: 'worker' | 'bazaar-only' | null; updatedAt: string; error: string }
 }
 
@@ -98,6 +112,7 @@ export const live = reactive<LiveState>({
   cost: {},
   detail: {},
   market: {},
+  quotes: {},
   prices: { origin: null, updatedAt: '', error: '' },
 })
 
@@ -123,4 +138,29 @@ export function setOwned(id: string, owned: boolean): void {
       }
     }
   }
+}
+
+/**
+ * Picks the mob being farmed (or none): switches to its activity, its slayer boss and slayer level, and fills
+ * Bestiary Magic Find from the tier read from the API when there is one.
+ */
+export function pickMob(id: string): void {
+  const mob = MOBS.find((m) => m.id === id)
+  state.mob = mob ? mob.id : ''
+  if (!mob) return
+  state.act = mob.act
+  if (mob.boss) {
+    state.boss = mob.boss
+    const lvl = state.slayers[mob.boss]
+    if (lvl !== undefined) state.prog.slv = lvl
+  }
+  const tier = mob.bestiary ? state.bestiary[mob.bestiary] : undefined
+  if (tier !== undefined) state.prog.best = tier * BESTIARY_MF_PER_TIER
+}
+
+/** Changing the activity tab drops a picked mob from another activity. */
+export function pickActivity(act: ActivityId): void {
+  state.act = act
+  const mob = MOBS.find((m) => m.id === state.mob)
+  if (mob && mob.act !== act) state.mob = ''
 }

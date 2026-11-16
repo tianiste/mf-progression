@@ -7,7 +7,7 @@ import { appliesTo } from '../lib/planner'
 import ItemIcon from './ItemIcon.vue'
 import { r1 } from '../lib/format'
 
-const stats = computed(() => PROGRESS.filter(appliesTo(state.act)))
+const stats = computed(() => PROGRESS.filter(appliesTo(state)))
 
 const value = (p: ProgressStat) => state.prog[p.id] ?? 0
 const bonus = (p: ProgressStat) => r1(p.mf(Math.min(p.max, value(p)), state.boss))

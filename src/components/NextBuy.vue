@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { MF_CAP } from '../data/sources'
+import { MF_CAP, goesOn } from '../data/sources'
 import type { Plan } from '../lib/planner'
 import { coins, r1 } from '../lib/format'
 import { live, state } from '../store'
@@ -24,12 +24,13 @@ const budgetLabel = computed(() => (state.budget > 0 ? coins(state.budget * 1e6)
         <ItemIcon :source="next.source.id" :size="48" />
         <p class="item">{{ next.source.name }}</p>
       </div>
-      <p class="line star-line">✯ Magic Find +{{ r1(next.source.mf) }}</p>
+      <p class="line star-line">✯ Magic Find +{{ r1(next.gain) }}</p>
       <p v-if="next.cost === null" class="line muted">No price yet. Type one into the list below.</p>
       <p v-else-if="next.cost === 0" class="line coin-line">Free: costs only XP or time</p>
       <p v-else class="line coin-line">
         {{ coins(next.cost) }} coins, {{ coins(next.coinsPerMF ?? 0) }} per ✯
       </p>
+      <p v-if="goesOn(next.source, state.act)" class="line where">Goes on {{ goesOn(next.source, state.act) }}.</p>
       <p class="line muted note">{{ next.source.note }}</p>
       <p v-if="live.detail[next.source.id]" class="line muted note live">{{ live.detail[next.source.id] }}</p>
       <p v-if="after.length" class="line muted then">
@@ -114,6 +115,11 @@ const budgetLabel = computed(() => (state.budget > 0 ? coins(state.budget * 1e6)
 .star-line {
   color: var(--tip-star);
   font-weight: 600;
+}
+.where {
+  margin-top: 8px;
+  color: var(--tip-gold);
+  font-size: 14px;
 }
 .coin-line {
   color: var(--tip-gold);

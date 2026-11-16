@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { Source } from '../data/sources'
-import { SOURCES } from '../data/sources'
+import { SLOT_NAME, SOURCES, goesOn } from '../data/sources'
 import type { Plan } from '../lib/planner'
 import { appliesTo } from '../lib/planner'
 import { coins, r1 } from '../lib/format'
@@ -55,8 +55,9 @@ function chipOf(s: Source): { text: string; kind: string } | null {
       <div>
         <h2>Buy order</h2>
         <p class="lede">
-          Cheapest Magic Find point first. Upgrade tiers stay behind the tier they build on. Prices are in millions of
-          coins (0.25 = 250k); clear one to go back to the default.
+          Cheapest Magic Find point first. Upgrade tiers stay behind the tier they build on, and only one helmet and
+          one pet item count, so each row shows what it adds on top of what you have. Prices are in millions of coins
+          (0.25 = 250k); clear one to go back to the default.
         </p>
       </div>
       <label class="field budget" for="budget">
@@ -89,10 +90,16 @@ function chipOf(s: Source): { text: string; kind: string } | null {
               <span v-if="chipOf(r.source)" class="chip" :class="chipOf(r.source)!.kind">{{ chipOf(r.source)!.text }}</span>
             </p>
             <p class="note">{{ r.source.note }}</p>
+            <p v-if="goesOn(r.source, state.act)" class="note where">Goes on {{ goesOn(r.source, state.act) }}.</p>
+            <p v-if="r.neededFor" class="note where">Adds nothing by itself; you need it for the {{ r.neededFor.name }}.</p>
+            <p v-if="r.replaces && !r.neededFor" class="note where">
+              Replaces your {{ r.replaces.name }} in the {{ SLOT_NAME[r.source.slot!] }} slot, so it adds only the
+              difference.
+            </p>
             <p v-if="live.detail[r.source.id]" class="note detail">{{ live.detail[r.source.id] }}</p>
             </div>
           </div>
-          <span class="gives star num">+{{ r1(r.source.mf) }} ✯</span>
+          <span class="gives star num">+{{ r1(r.gain) }} ✯</span>
           <input
             class="price"
             type="number"
@@ -120,6 +127,20 @@ function chipOf(s: Source): { text: string; kind: string } | null {
         {{ budgetText }}
       </li>
     </ol>
+
+    <template v-if="plan.noGain.length">
+      <h3>Adds nothing for you</h3>
+      <p class="lede">A better item already fills the slot, so these don't add Magic Find while you farm this.</p>
+      <ul class="owned">
+        <li v-for="n in plan.noGain" :key="n.source.id">
+          <span class="check">
+            <ItemIcon :source="n.source.id" :size="20" />
+            <span>{{ n.source.name }}</span>
+          </span>
+          <span class="muted-line">{{ n.blockedBy.name }} is better in the {{ SLOT_NAME[n.source.slot!] }} slot</span>
+        </li>
+      </ul>
+    </template>
 
     <template v-if="owned.length">
       <h3>Already owned</h3>
@@ -237,6 +258,13 @@ h2 {
 .chip.live {
   border: 1px solid var(--good);
   color: var(--good);
+}
+.where {
+  color: var(--violet);
+}
+.muted-line {
+  font-size: 13px;
+  text-align: right;
 }
 .detail {
   color: var(--ink);

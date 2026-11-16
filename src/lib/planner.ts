@@ -1,8 +1,10 @@
-import type { ActivityId, Source } from '../data/sources'
+import type { ActivityId, Slot, Source } from '../data/sources'
 import { MF_CAP, PROGRESS, SOURCES, TOGGLES } from '../data/sources'
 import type { State } from '../store'
 
 export const appliesTo = (act: ActivityId) => (x: { act: ActivityId }) => x.act === 'all' || x.act === act
+
+const byId = new Map(SOURCES.map((s) => [s.id, s]))
 
 /** Price of a source in coins: user override, then live price, then default. null = unknown. */
 export function costOf(s: Source, state: State, liveCost: Record<string, number>): number | null {
@@ -11,41 +13,55 @@ export function costOf(s: Source, state: State, liveCost: Record<string, number>
   return liveCost[s.id] ?? s.cost
 }
 
-/** Magic Find the player already has for the chosen activity. */
-export function baseMF(state: State): number {
-  const on = appliesTo(state.act)
+/** What a slotted item is worth in its slot: its own MF plus the tiers below it in the same slot. */
+function slotValue(s: Source): number {
+  const below = s.need ? byId.get(s.need) : undefined
+  return s.mf + (below && below.slot === s.slot ? slotValue(below) : 0)
+}
+
+/** The item that fills each slot (the most MF among the set) and the slot's MF. */
+function bestPerSlot(set: Iterable<Source>): Map<Slot, { source: Source; mf: number }> {
+  const best = new Map<Slot, { source: Source; mf: number }>()
+  for (const s of set) {
+    if (!s.slot) continue
+    const v = slotValue(s)
+    const cur = best.get(s.slot)
+    if (!cur || v > cur.mf) best.set(s.slot, { source: s, mf: v })
+  }
+  return best
+}
+
+/** MF from a set of sources: unslotted ones add up, each slot counts only its best item. */
+function setMF(set: Set<Source>): number {
   let t = 0
-  for (const p of PROGRESS.filter(on)) t += p.mf(Math.min(p.max, state.prog[p.id] ?? 0), state.boss)
-  for (const g of TOGGLES) if (state.tog[g.id]) t += g.mf(state.act)
-  for (const s of SOURCES.filter(on)) if (state.own[s.id]) t += s.mf
+  for (const s of set) if (!s.slot) t += s.mf
+  for (const { mf } of bestPerSlot(set).values()) t += mf
   return t
 }
 
-/** Unowned sources, cheapest coins per MF first, unpriced last, upgrade tiers after their base tier. */
-export function buyOrder(state: State, liveCost: Record<string, number>): Source[] {
-  const on = appliesTo(state.act)
-  const todo = SOURCES.filter((s) => on(s) && !state.own[s.id])
-  const cost = (s: Source) => costOf(s, state, liveCost)
-  const priced = todo.filter((s) => cost(s) !== null).sort((a, b) => cost(a)! / a.mf - cost(b)! / b.mf)
-  const blank = todo.filter((s) => cost(s) === null)
-  const list = [...priced, ...blank]
-  // A tier cannot come before the tier it upgrades: move it to just after that tier.
-  for (let pass = 0; pass < list.length; pass++) {
-    for (let i = 0; i < list.length; i++) {
-      const s = list[i]!
-      if (!s.need) continue
-      const j = list.findIndex((x) => x.id === s.need)
-      if (j > i) {
-        list.splice(i, 1)
-        list.splice(j, 0, s)
-      }
-    }
-  }
-  return list
+/** MF from progress and toggles (no coin price). */
+function progressMF(state: State): number {
+  let t = 0
+  for (const p of PROGRESS.filter(appliesTo(state.act))) t += p.mf(Math.min(p.max, state.prog[p.id] ?? 0), state.boss)
+  for (const g of TOGGLES) if (state.tog[g.id]) t += g.mf(state.act)
+  return t
+}
+
+const ownedSet = (state: State) => new Set(SOURCES.filter((s) => appliesTo(state.act)(s) && state.own[s.id]))
+
+/** Magic Find the player already has for the chosen activity. */
+export function baseMF(state: State): number {
+  return progressMF(state) + setMF(ownedSet(state))
 }
 
 export interface PlanRow {
   source: Source
+  /** MF this purchase adds after what is already owned or bought above it (slot-aware). */
+  gain: number
+  /** The item it replaces in its slot, if any. */
+  replaces?: Source
+  /** Set when this row adds nothing by itself but is the tier an upgrade below it needs. */
+  neededFor?: Source
   cost: number | null
   coinsPerMF: number | null
   /** Running MF after buying this row (capped), null when unpriced. */
@@ -57,33 +73,110 @@ export interface PlanRow {
 export interface Plan {
   now: number
   rows: PlanRow[]
+  /** Sources that would add nothing: a better item already fills their slot. */
+  noGain: { source: Source; blockedBy: Source }[]
   budgetMF: number
   budgetCost: number
   everything: number
 }
 
+/**
+ * Buy order, greedy by coins per Magic Find actually gained. Each step looks at every source together with the
+ * lower tiers it needs (Crown of Greed for the Crown of Avarice), values it by what it adds over what is owned or
+ * already chosen (a helmet only adds its difference over the helmet you wear), and takes the cheapest point.
+ * Unpriced sources follow; sources that can never add anything are listed apart.
+ */
 export function plan(state: State, liveCost: Record<string, number>): Plan {
-  const now = baseMF(state)
+  const pool = SOURCES.filter(appliesTo(state.act))
+  const have = ownedSet(state)
+  const progress = progressMF(state)
+  const now = progress + setMF(have)
+  const cost = (s: Source) => costOf(s, state, liveCost)
+
+  /** s and the lower tiers it needs that are not owned yet, lowest first. */
+  const chainTo = (s: Source): Source[] => {
+    const out: Source[] = []
+    for (let x: Source | undefined = s; x && !have.has(x); x = x.need ? byId.get(x.need) : undefined) out.unshift(x)
+    return out
+  }
+  const gainOf = (items: Source[]) => setMF(new Set([...have, ...items])) - setMF(have)
+  const replacing = (s: Source) => {
+    if (!s.slot) return undefined
+    const cur = bestPerSlot(have).get(s.slot)?.source
+    if (!cur || cur === s) return undefined
+    // Its own lower tier is upgraded, not replaced.
+    for (let x = s.need ? byId.get(s.need) : undefined; x; x = x.need ? byId.get(x.need) : undefined) if (x === cur) return undefined
+    return cur
+  }
+
+  const rows: PlanRow[] = []
+  /** Adds a chain as rows, one per item, each with what it adds at that point. */
+  const take = (chain: Source[], priced: boolean) => {
+    const target = chain[chain.length - 1]!
+    for (const s of chain) {
+      const gain = gainOf([s])
+      const replaces = replacing(s)
+      have.add(s)
+      const c = cost(s)
+      rows.push({
+        source: s,
+        gain,
+        replaces,
+        neededFor: s !== target && gain <= 0 ? target : undefined,
+        cost: c,
+        coinsPerMF: c !== null && gain > 0 ? c / gain : null,
+        runningMF: priced ? Math.min(MF_CAP, progress + setMF(have)) : null,
+        runningCost: null,
+        inBudget: false,
+      })
+    }
+  }
+
+  // Priced chains, cheapest gained point first.
+  for (;;) {
+    let pick: { chain: Source[]; ratio: number } | null = null
+    for (const s of pool) {
+      if (have.has(s)) continue
+      const chain = chainTo(s)
+      const costs = chain.map(cost)
+      if (costs.some((c) => c === null)) continue
+      const gain = gainOf(chain)
+      if (gain <= 0) continue
+      const ratio = (costs as number[]).reduce((a, b) => a + b, 0) / gain
+      if (!pick || ratio < pick.ratio) pick = { chain, ratio }
+    }
+    if (!pick) break
+    take(pick.chain, true)
+  }
+
+  // Running totals and budget over the priced rows, in order.
   const budget = state.budget * 1e6
-  let mf = now
   let spent = 0
   let budgetMF = now
   let budgetCost = 0
   let stopped = false
-  const rows: PlanRow[] = buyOrder(state, liveCost).map((s) => {
-    const c = costOf(s, state, liveCost)
-    if (c === null) return { source: s, cost: null, coinsPerMF: null, runningMF: null, runningCost: null, inBudget: false }
-    let inBudget = false
-    spent += c
-    mf += s.mf
+  for (const r of rows) {
+    spent += r.cost ?? 0
+    r.runningCost = spent
     if (!stopped && spent <= budget) {
-      budgetMF = mf
+      r.inBudget = true
+      budgetMF = r.runningMF ?? budgetMF
       budgetCost = spent
-      inBudget = true
     } else stopped = true
-    return { source: s, cost: c, coinsPerMF: c / s.mf, runningMF: Math.min(MF_CAP, mf), runningCost: spent, inBudget }
-  })
-  const on = appliesTo(state.act)
-  const everything = now + SOURCES.filter((s) => on(s) && !state.own[s.id]).reduce((t, s) => t + s.mf, 0)
-  return { now, rows, budgetMF, budgetCost, everything }
+  }
+
+  // Unpriced chains (list order), valued as if added next; slotted items that can never help are set apart.
+  const noGain: Plan['noGain'] = []
+  for (const s of pool) {
+    if (have.has(s)) continue
+    const chain = chainTo(s)
+    if (gainOf(chain) > 0) take(chain, false)
+  }
+  for (const s of pool) {
+    if (have.has(s) || !s.slot) continue
+    const blockedBy = bestPerSlot(have).get(s.slot)?.source
+    if (blockedBy) noGain.push({ source: s, blockedBy })
+  }
+
+  return { now, rows, noGain, budgetMF, budgetCost, everything: progress + setMF(new Set(pool)) }
 }

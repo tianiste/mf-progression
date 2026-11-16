@@ -6,6 +6,7 @@ import type { Plan } from '../lib/planner'
 import { appliesTo } from '../lib/planner'
 import { coins, r1 } from '../lib/format'
 import { live, setOwned, state } from '../store'
+import ItemIcon from './ItemIcon.vue'
 
 const props = defineProps<{ plan: Plan }>()
 
@@ -81,12 +82,15 @@ function chipOf(s: Source): { text: string; kind: string } | null {
             @change="setOwned(r.source.id, true)"
           />
           <div class="what">
+            <ItemIcon :source="r.source.id" :size="32" />
+            <div>
             <p class="name">
               {{ r.source.name }}
               <span v-if="chipOf(r.source)" class="chip" :class="chipOf(r.source)!.kind">{{ chipOf(r.source)!.text }}</span>
             </p>
             <p class="note">{{ r.source.note }}</p>
             <p v-if="live.detail[r.source.id]" class="note detail">{{ live.detail[r.source.id] }}</p>
+            </div>
           </div>
           <span class="gives star num">+{{ r1(r.source.mf) }} ✯</span>
           <input
@@ -123,6 +127,7 @@ function chipOf(s: Source): { text: string; kind: string } | null {
         <li v-for="s in owned" :key="s.id">
           <label class="check">
             <input type="checkbox" checked @change="setOwned(s.id, false)" />
+            <ItemIcon :source="s.id" :size="20" />
             <span>{{ s.name }}</span>
           </label>
           <span class="star num">+{{ r1(s.mf) }} ✯</span>
@@ -199,6 +204,12 @@ h2 {
 }
 .own {
   margin-top: 3px;
+}
+.what {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  min-width: 0;
 }
 .name {
   font-weight: 700;

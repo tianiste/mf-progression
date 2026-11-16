@@ -4,6 +4,7 @@ import { MF_CAP } from '../data/sources'
 import type { Plan } from '../lib/planner'
 import { coins, r1 } from '../lib/format'
 import { live, state } from '../store'
+import ItemIcon from './ItemIcon.vue'
 
 const props = defineProps<{ plan: Plan }>()
 
@@ -19,7 +20,10 @@ const budgetLabel = computed(() => (state.budget > 0 ? coins(state.budget * 1e6)
   <div class="tooltip" aria-live="polite">
     <template v-if="next">
       <p class="kicker">Buy this next</p>
-      <p class="item">{{ next.source.name }}</p>
+      <div class="item-row">
+        <ItemIcon :source="next.source.id" :size="48" />
+        <p class="item">{{ next.source.name }}</p>
+      </div>
       <p class="line star-line">✯ Magic Find +{{ r1(next.source.mf) }}</p>
       <p v-if="next.cost === null" class="line muted">No price yet. Type one into the list below.</p>
       <p v-else-if="next.cost === 0" class="line coin-line">Free: costs only XP or time</p>
@@ -85,6 +89,15 @@ const budgetLabel = computed(() => (state.budget > 0 ? coins(state.budget * 1e6)
 .kicker {
   font-size: 13px;
   color: var(--tip-muted);
+}
+.item-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 8px 0 10px;
+}
+.item-row .item {
+  margin: 0;
 }
 .item {
   font-family: var(--pixel);

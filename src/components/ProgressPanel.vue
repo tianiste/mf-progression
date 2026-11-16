@@ -4,6 +4,7 @@ import type { BossId, ProgressStat } from '../data/sources'
 import { BOSSES, PROGRESS, TOGGLES } from '../data/sources'
 import { state } from '../store'
 import { appliesTo } from '../lib/planner'
+import ItemIcon from './ItemIcon.vue'
 import { r1 } from '../lib/format'
 
 const stats = computed(() => PROGRESS.filter(appliesTo(state.act)))
@@ -43,6 +44,7 @@ function setBoss(e: Event) {
     <div class="toggles">
       <label v-for="g in TOGGLES" :key="g.id" class="check" :for="'t_' + g.id">
         <input :id="'t_' + g.id" v-model="state.tog[g.id]" type="checkbox" />
+        <ItemIcon v-if="g.id !== 'aatrox'" :toggle="g.id" :size="20" />
         <span>{{ g.name }}</span>
       </label>
     </div>

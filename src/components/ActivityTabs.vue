@@ -67,7 +67,7 @@ const bestiaryLine = computed(() => {
         Each Magic Find point is worth about <strong class="coin">{{ coins(props.value.perPointPerKill) }}</strong> per kill,
         <strong class="coin">{{ coins(props.value.perPointPerHour) }}</strong> per hour.
       </p>
-      <p v-else-if="props.value" class="lede">No priced drops for this mob yet, so there is no payback time.</p>
+      <p v-else-if="props.value && mob.drops.length" class="lede">No priced drops for this mob right now, so there is no payback time.</p>
       <p class="lede">
         {{ mob.dataNote }}
         <template v-if="props.value && props.value.missing.length">

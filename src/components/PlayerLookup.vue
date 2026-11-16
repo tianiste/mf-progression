@@ -6,10 +6,12 @@ import type { GearScan } from '../lib/gear'
 import { scanGear } from '../lib/gear'
 import { BOSSES, SOURCES } from '../data/sources'
 import { setOwned, state } from '../store'
+import { BESTIARY_MF_PER_TIER, FAMILY_NAMES, bestPetLevel, bestiaryTier } from '../lib/progress'
+import { MOBS } from '../../shared/mobs'
 
 const loading = ref(false)
 const message = ref(
-  'Fills in combat level, pet score, slayer levels, Booster Cookie and the Magic Find gear you own. Get a key at developer.hypixel.net; it stays in this browser and is only sent to api.hypixel.net.',
+  'Fills in combat level, pet score, slayer levels, Booster Cookie, Bestiary, Griffin and Megalodon levels and the Magic Find gear you own. Get a key at developer.hypixel.net; it stays in this browser and is only sent to api.hypixel.net.',
 )
 const uuid = ref('')
 const profiles = ref<Profile[]>([])
@@ -45,6 +47,35 @@ async function applyProfile(id: string) {
     got.push('Cookie ' + (r.cookie ? 'on' : 'off'))
   }
 
+  // Bestiary tiers for every tracked family; the picked mob's tier fills Bestiary Magic Find.
+  const m = member as { bestiary?: { kills?: Record<string, number> }; pets_data?: { pets?: unknown } } | undefined
+  const kills = m?.bestiary?.kills
+  if (kills && typeof kills === 'object') {
+    const tiers: Record<string, number> = {}
+    for (const fam of FAMILY_NAMES) {
+      const t = bestiaryTier(fam, kills)
+      if (t !== null) tiers[fam] = t
+    }
+    state.bestiary = tiers
+    const fam = MOBS.find((x) => x.id === state.mob)?.bestiary
+    if (fam && tiers[fam] !== undefined) {
+      state.prog.best = tiers[fam]! * BESTIARY_MF_PER_TIER
+      got.push(`${fam} Bestiary tier ${tiers[fam]}`)
+    } else got.push('Bestiary')
+  } else miss.push('Bestiary')
+
+  // Griffin (King of Kings needs Legendary or better) and Megalodon levels.
+  const griffin = bestPetLevel(m?.pets_data?.pets, 'GRIFFIN', 'LEGENDARY')
+  if (griffin !== null) {
+    state.prog.griffin = griffin
+    got.push('Griffin ' + griffin)
+  }
+  const mega = bestPetLevel(m?.pets_data?.pets, 'MEGALODON')
+  if (mega !== null) {
+    state.prog.mega = mega
+    got.push('Megalodon ' + mega)
+  }
+
   gear.value = null
   try {
     const scan = await scanGear(member)
@@ -58,7 +89,7 @@ async function applyProfile(id: string) {
   message.value =
     `Loaded ${p.cute_name || 'profile'}: ${got.join(', ') || 'nothing'}.` +
     (miss.length ? ` Not in the API response: ${miss.join(', ')}.` : '') +
-    ' Set by hand: Bestiary, account upgrade, pet levels and attribute shards.'
+    ' Set by hand: account upgrade, Bestiary for mobs without a family, and attribute shard levels (the API does not show them).'
 }
 
 async function load() {

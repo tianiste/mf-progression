@@ -59,3 +59,6 @@ export function bestPetLevel(pets: unknown, type: string, minRarity = 'COMMON'):
   }
   return best
 }
+
+/** Every Bestiary family in the trimmed table. */
+export const FAMILY_NAMES = Object.keys(FAMILIES)

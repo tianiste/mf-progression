@@ -46,8 +46,8 @@ Research notes behind the calculator. Values match the 0.27.3 release (17 Nov 20
 | Booster Cookie | +10 (was +15) | About 14-15.4M per 4 days |
 | God Potion / MF Potion IV | +10 (tiers 2.5/5/7.5/10) | God Potion about 1.6-1.75M (older AH data) |
 | MF account upgrade (Elizabeth) | +1 to +5 | Cost not researched |
-| Divine Gift | +1 each, max 5 | Now a consumable from the Regalia Room. New price unconfirmed; old book was 25M. Old books refund 1/2/4 via /reclaim. |
-| Pulse Ring | 0.5 / 1 / 1.5 / 2 by rarity | Old guide estimates: Rare 7.5M, Epic 44M, Legendary 200M total. Dated. |
+| Divine Gift | +1 each, max 5 | Consumable, Bazaar item `DIVINE_GIFT`, about 23.9M each (18 Nov 2026). Old books can be refunded via /reclaim. |
+| Pulse Ring | 0.5 / 1 / 1.5 / 2 by rarity | 18 Nov 2026 Auction House: Rare about 10M; Filled Thunder in a Bottle about 650k (Epic needs 17 more, Legendary 80 more). |
 | Anguish Talisman/Ring/Artifact | 0.5 / 1 / 1.5 | Price not researched |
 | Private Island Beacon | +0.5 per tier, +3 max | |
 | Diana's Bookshelf | +1 | 75M in Regalia Room + drop 6 Chimera I |
@@ -98,10 +98,10 @@ Griffin "King of Kings" +0.1 to +10, Four-Eyed Fish +5 (was 13), Crown of Greed 
 4. Looting VI: +5 more for about 245k (about 49k per MF).
 5. Cinderbat Shard to level 10: +5 for about 650k (about 130k per MF).
 6. Upkeep: Booster Cookie +10, God Potion +10.
-7. Pulse Ring (Rare): +1 for about 7.5M.
-8. Divine Gift x5: +5, about 25M per MF if the price holds.
+7. Pulse Ring (Rare): +1 for about 10M.
+8. Divine Gift x5: +5, about 24M per MF.
 9. Diana's Bookshelf: +1 for 75M plus drops.
-10. Pulse Ring to Epic then Legendary: +0.5 each, about 73M and 312M per MF. Worst value.
+10. Pulse Ring to Epic then Legendary: +0.5 each, about 22M and 104M per MF.
 
 Steps 1-5 give about +25 MF for under 1M coins. After that the cost per point jumps about 40x. For mob-specific farming, the matching attribute shard is likely the next best buy. Wait for a market price on Looting VII.
 

@@ -1,16 +1,16 @@
 # Magic Find mechanics and sources (0.27.3 rework)
 
-Rechecked on 16 Nov 2026 against the Alpha wiki page (hypixelskyblock.minecraft.wiki/w/Magic_Find/Alpha, edited 15 Nov), the Looting, Magma Lord Armor, Crown of Avarice and Sorrow Armor pages, and the Release Candidate 1 and 2 threads.
+Checked on 18 Nov 2026 against the 0.27.3 release notes (https://hypixel.net/threads/hypixel-skyblock-0-27-3-magic-find-rework-accessory-bag-revamp-and-more.6169127/, released 17 Nov 2026) and Hypixel's published per-boss slayer drop spreadsheets linked from them. Earlier checks used the Alpha wiki and the Release Candidate 1 and 2 threads.
 
 ## Payback time
 
 One Magic Find point adds 1% of each drop's base chance (overflow past 100% becomes a chance to double, so the expected count stays linear). Per kill, a point is worth 1% of the mob's expected drop value: sum of chance × quantity × price, divided by 100. An upgrade that adds G points earns G × that × kills per hour, and pays for itself after cost ÷ that many hours.
 
-Drop tables (`shared/mobs.ts`) come from the wiki (0.27.2 values) with the Release Candidate 1/2 changes applied where they are listed. The rework's per-boss slayer tables were only in spreadsheets we could not read, so slayer numbers are partly pre-rework. Revenant Horror has no table (the wiki only gives weights). Rare dyes and runes are left out. Disputed chances (Chimera from Inquisitors, Minos Relic, Magma Lord Fragment from Jawbus) keep the release-candidate value and a note.
+Drop tables (`shared/mobs.ts`) come from the release notes (Mythological Ritual, Crimson Isle, Fishing Festival and Dwarven Mines tables) and Hypixel's published slayer spreadsheets (Revenant V, Tarantula V, Sven IV, Voidgloom IV, Inferno IV). Slayers now roll every drop on each kill. Ranges use the midpoint. The release settles the earlier disputes: Mythic Inquisitor Chimera I 2.5%, Mythic Champion Minos Relic 0.15%, Lord Jawbus Magma Lord Fragment 50%, Thunder 4 Silver Magmafish, Thunder Shard 50%, Flash I 4%. Runes, dyes, potions and skins are left out (no tradeable item id); the Ghost's 1M coin drop is the wiki's.
 
 ## Bestiary
 
-Bestiary Magic Find is assumed to be +3 per tier on that family (the Alpha wiki lists +3 to +75). Tiers come from `bestiary.kills` in the profile with NotEnoughUpdates-REPO brackets and caps.
+Bestiary Magic Find is assumed to be +3 per tier on that family (the Alpha wiki lists +3 to +75; the release notes do not restate it). Tiers come from `bestiary.kills` in the profile with NotEnoughUpdates-REPO brackets and caps.
 
 ## Equipment rules the planner follows
 
@@ -18,7 +18,7 @@ Bestiary Magic Find is assumed to be +3 per tier on that family (the Alpha wiki 
 - One pet is active, so Griffin (King of Kings, Four-Eyed Fish) and Megalodon (Blood Scent) only count while that pet is equipped.
 - Looting counts only on the item you kill with. It can go on swords, longswords, bows, fishing rods, drills, pickaxes, axes and the Gemstone Gauntlet (needs Enchanting III). Habanero Tactics counts only with a slayer weapon against Slayer bosses; Bobbin' Time goes on the fishing rod.
 
-Research notes behind the calculator. Values follow the 0.27.3 alpha threads up to Release Candidate #2 (12 Nov 2026) and must be re-checked against the release patch notes. Prices are Bazaar/AH snapshots from 16 Nov 2026 unless noted.
+Research notes behind the calculator. Values match the 0.27.3 release (17 Nov 2026). Prices are Bazaar/AH snapshots from 16 Nov 2026 unless noted; the site uses live prices.
 
 ## Mechanics after the rework
 
@@ -30,7 +30,7 @@ Research notes behind the calculator. Values follow the 0.27.3 alpha threads up 
 - Removed as MF sources: all pets' base MF (Golden Dragon, Goblin, Jade Dragon, Rat, Spider/Tarantula, Grandma Wolf, Mammoth, Mithril Golem), enrichments, Sorrow base MF, End cloaks, Lucky Clover, Lucky Dice, Legion, Jerry Candy, Dragon Horn, Superior armor, Entropy Suppressor, Rift Necklace, Miner's Blessing, Slayer Energy Drink, Hatcessories, SkyBlock levels (added then removed during alpha), Bucket of Dye (now dye chance), Nutcracker "Chilly" bonus (removed in RC2).
 - Minos Relic, Hephaestus Relic, Chimera: unchanged, but no longer matter for MF because pets have none.
 
-## MF sources (RC2 values)
+## MF sources (0.27.3 release)
 
 ### Work on every mob
 
@@ -54,7 +54,7 @@ Research notes behind the calculator. Values follow the 0.27.3 alpha threads up 
 | Necron's Ladder | +1 | 3 Necron Handle drops |
 | Century Cake of the Next Dungeon Floor | +1 | Temporary |
 | Beastslayer's Codex (Mythic) | +1 | Bestiary Milestone 300 |
-| Clover Helmet | +5 flat | Reverted to a helmet in RC2. Shen's Auction item. |
+| Clover Helmet | +5 flat | Kept at its live behaviour for this release; its rework comes with the Pet Luck revamp. |
 | Extremely Real Shuriken | +5 on tagged mob | |
 | Celestial Mason Jar | +1 (was 3) | |
 | Witch stews (Year of the Witch) | +1 to +3 on one mob type each (not Mythological, Pest, Timid, Spooky) | 10k coins each, event only |
@@ -80,8 +80,11 @@ Griffin "King of Kings" +0.1 to +10, Four-Eyed Fish +5 (was 13), Crown of Greed 
 ### Fishing and others
 
 - Lava: Magma Lord "Lord's Blessing" 2.5/5/7.5/10 on Lava Sea Creatures, a tiered set bonus over five pieces including the Magma Lord Necklace (RC2: 5/5 is +10, 4/5 plus a Clover Helmet is +12.5). Odger's tooth line +1 to +4 on Magmatic, Lava Flame Shard +5.
-- Sharks: Shark Tooth Necklace line (Dull to Razor-sharp) +1 to +5, Megalodon "Blood Scent" +0.1 to +10, Denture Collector +1/2/3.
-- Bobbin' Time: scales with nearby fishing players on Sea Creatures; the Alpha wiki lists +1 to +20. The planner assumes +5.
+- Sharks: Shark Tooth line, renamed Talisman/Ring/Artifact/Relic/Heirloom in the release, +1 to +5, Megalodon "Blood Scent" +0.1 to +10, Denture Collector +1/2/3.
+- Bobbin' Time: +0.6/0.8/1 Magic Find on Sea Creatures per nearby bobber, max 5 (so +5 at level V with five bobbers). The planner assumes +5.
+- Animals: Researcher Ribery's line (Applicant's Statement, Student's Studies, Master's Thesis, PhD's Grimoire) +1/2/3/4 on Animal mobs.
+- Tarantula: Shriveled Bracelet +5 on Arachne, the Broodmother and the Tarantula Broodfather.
+- Automatons: Mole pet "Magnetic Nose" +0.1 to +10 (not in the planner).
 - Ghosts: Sorrow Armor no longer gives base MF; its "Gravekeeper" tiered bonus gives 5/7.5/10 on Ghosts. Pieces needed per tier are not confirmed.
 - Animals: Researcher Ribery's accessory line +1 to +4.
 - Automatons: Mole "Magnetic Nose" +0.1 to +10.
@@ -113,6 +116,7 @@ Steps 1-5 give about +25 MF for under 1M coins. After that the cost per point ju
 - https://hypixel.net/threads/october-22-magic-find-rework-testing-2.6164761/
 - https://hypixel.net/threads/october-15-magic-find-rework-ghost-visitors.6162638/
 - https://status.hypixel.net/
+- https://hypixel.net/threads/hypixel-skyblock-0-27-3-magic-find-rework-accessory-bag-revamp-and-more.6169127/
 - https://hypixelskyblock.minecraft.wiki/w/Magic_Find/Alpha
 - https://hypixelskyblock.minecraft.wiki/w/Looting/Alpha
 - https://hypixelskyblock.minecraft.wiki/w/Divine_Gift/Alpha

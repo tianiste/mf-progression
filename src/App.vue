@@ -44,7 +44,7 @@ const priceLine = computed(() => {
       <span>Luckledger</span>
     </a>
     <p class="status">
-      0.27.3 RC2 numbers. Some may change on 17 Nov.
+      Updated for 0.27.3 (17 Nov).
     </p>
   </header>
 

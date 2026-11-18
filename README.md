@@ -89,7 +89,7 @@ The mark is a ranked ledger: three rows getting longer (pricier) downward, with 
 
 ## Status
 
-Values follow Release Candidate #2 (12 Nov 2026). The update is scheduled for the 17 Nov 2026 maintenance, so numbers and prices may still change. Not loaded from the API: account upgrades and attribute shard levels (the API does not show them; enter these by hand). Gear reading follows the Hypixel API v2 layout but has not been checked against a live profile yet.
+Values follow the 0.27.3 release (17 Nov 2026) patch notes and Hypixel's published slayer drop tables. Not loaded from the API: account upgrades and attribute shard levels (the API does not show them; enter these by hand). Gear reading follows the Hypixel API v2 layout but has not been checked against a live profile yet.
 
 ## APIs used
 

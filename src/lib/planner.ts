@@ -3,7 +3,7 @@ import { MF_CAP, PROGRESS, SOURCES, TOGGLES } from '../data/sources'
 import type { State } from '../store'
 import { MOBS } from '../../shared/mobs'
 
-type Filterable = { act: ActivityId; mobType?: string; onlyWithoutMob?: boolean; notForTypes?: string[] }
+type Filterable = { act: ActivityId; mobType?: string; onlyWithoutMob?: boolean; notForTypes?: string[]; mobIds?: string[] }
 
 /**
  * Which sources and stats count for the chosen activity and mob: the activity's own plus the "all" ones; mob-type
@@ -15,6 +15,7 @@ export function appliesTo(state: { act: ActivityId; mob?: string }) {
   return (x: Filterable): boolean => {
     if (x.act !== 'all' && x.act !== state.act) return false
     if (x.onlyWithoutMob && mob) return false
+    if (x.mobIds) return !!mob && x.mobIds.includes(mob.id)
     if (x.mobType) return mob ? mob.types.includes(x.mobType) : x.act !== 'all'
     if (x.notForTypes && mob && mob.types.some((t) => x.notForTypes!.includes(t))) return false
     return true

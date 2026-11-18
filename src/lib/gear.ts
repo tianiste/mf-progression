@@ -67,6 +67,8 @@ const SIMPLE: Record<string, string> = {
   GOLDEN_FLEECE: 'fleece',
   ODGERS_DIAMOND_TOOTH: 'odger',
   RAZOR_SHARP_SHARK_TOOTH_NECKLACE: 'sharktooth',
+  PHD_GRIMOIRE: 'ribery',
+  SHRIVELED_BRACELET: 'bracelet',
 }
 
 /** Scans every readable inventory of a profile member. Pets come from pets_data. */

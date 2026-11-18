@@ -44,6 +44,8 @@ export interface Source {
   onlyWithoutMob?: boolean
   /** Does not work on these mob types. */
   notForTypes?: string[]
+  /** Only counts on these mobs (shared/mobs.ts ids); listed only when one of them is picked. */
+  mobIds?: string[]
 }
 
 export type Slot = 'helmet' | 'petItem'
@@ -95,8 +97,10 @@ export const SOURCES: Source[] = [
   { id: 'shard_critter', act: 'all', mobType: 'Critter', name: 'Hewver Shard 10', mf: 5, cost: null, note: '48 shards.' },
   { id: 'shard_woodland', act: 'all', mobType: 'Woodland', name: 'Hideonfloor Shard 10', mf: 5, cost: null, note: '48 shards.' },
   { id: 'shard_arcane', act: 'all', mobType: 'Arcane', name: 'Hideonwall Shard 10', mf: 5, cost: null, note: '48 shards.' },
+  { id: 'ribery', act: 'all', mobType: 'Animal', name: "PhD's Grimoire", mf: 4, cost: null, note: "Top of Researcher Ribery's line." },
   { id: 'jar', act: 'all', name: 'Celestial Mason Jar', mf: 1, cost: null, note: '' },
 
+  { id: 'bracelet', act: 'slayer', mobIds: ['tarantula'], name: 'Shriveled Bracelet', mf: 5, cost: null, note: 'Arachne, Broodmother and Tarantula only.' },
   { id: 'wolffur', act: 'slayer', name: 'Wolf Fur Mixin', mf: 5, cost: null, note: 'Slayer bosses only.' },
   { id: 'haban', act: 'slayer', name: 'Habanero Tactics V', mf: 5, cost: null, goesOn: 'your slayer weapon', note: 'Slayer bosses only.' },
 
@@ -111,11 +115,11 @@ export const SOURCES: Source[] = [
   { id: 'magma4', act: 'lava', name: 'Magma Lord 4/5', mf: 7.5, cost: null, note: 'Chest, legs, boots, necklace.' },
   { id: 'magma5', act: 'lava', need: 'magma4', name: 'Magma Lord Helmet', mf: 2.5, cost: null, slot: 'helmet', note: 'Clover Helmet is usually better here.' },
   { id: 'odger', act: 'lava', name: "Odger's Diamond Tooth", mf: 4, cost: null, note: '' },
-  { id: 'bobbinL', act: 'lava', name: "Bobbin' Time V", mf: 5, cost: null, goesOn: 'your fishing rod', note: 'Assumes a small party.' },
+  { id: 'bobbinL', act: 'lava', name: "Bobbin' Time V", mf: 5, cost: null, goesOn: 'your fishing rod', note: '+1 per bobber nearby, max 5.' },
 
-  { id: 'sharktooth', act: 'shark', name: 'Razor-sharp Shark Tooth Necklace', mf: 5, cost: null, note: '' },
+  { id: 'sharktooth', act: 'shark', name: 'Shark Tooth Heirloom', mf: 5, cost: null, note: '' },
   { id: 'denture', act: 'shark', name: 'Denture Collector', mf: 3, cost: null, note: 'Carnival tickets.' },
-  { id: 'bobbinS', act: 'shark', name: "Bobbin' Time V", mf: 5, cost: null, goesOn: 'your fishing rod', note: 'Assumes a small party.' },
+  { id: 'bobbinS', act: 'shark', name: "Bobbin' Time V", mf: 5, cost: null, goesOn: 'your fishing rod', note: '+1 per bobber nearby, max 5.' },
 
   { id: 'sorrow', act: 'ghost', name: 'Sorrow Armor', mf: 10, cost: null, slot: 'helmet', note: 'Piece count per tier unconfirmed.' },
 ]

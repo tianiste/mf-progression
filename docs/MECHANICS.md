@@ -37,8 +37,8 @@ Research notes behind the calculator. Values match the 0.27.3 release (17 Nov 20
 | Source | MF | How / cost |
 |---|---|---|
 | Looting I-V | 2.5 / 5 / 7.5 / 10 / 15 | Enchanting table, XP only. Luck and Chance merged into Looting. Goes on swords, bows, rods, drills/pickaxes, axes. |
-| Looting VI | 20 | 25 North Stars from Einary (seasonal). About 9.4-9.8k per North Star before the update, so about 245k. |
-| Looting VII | 25 | Sphinx drop, 0.25% (Legendary Griffin) / 0.5% (Mythic). Temporary source. No market price yet. |
+| Looting VI | 20 | Bazaar book `ENCHANTMENT_LOOTING_NEW_6`, about 42k (18 Nov 2026), or 25 North Stars from Einary. |
+| Looting VII | 25 | Bazaar book `ENCHANTMENT_LOOTING_NEW_7`, about 41.5M (18 Nov 2026). Sphinx drop, 0.25% / 0.5%, temporary source. |
 | Cinderbat Shard attribute | +0.5 per level, +5 at level 10 | 24 shards total. Bazaar id SHARD_CINDER_BAT, about 27k each on 16 Nov (about 650k to max). |
 | Combat skill | +0.1/level (1-10), +0.2 (11-20), +0.3 (21-30), +0.4 (31-40), +0.5 (41-60). +20 at 60 | Grind |
 | Pet Score | +1 to +13 at 10/25/50/75/100/130/175/225/275/325/375/450/500 | Grind/buy pets |

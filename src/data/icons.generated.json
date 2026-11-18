@@ -40,6 +40,11 @@
    "size": 16,
    "source": "minecraft"
   },
+  "DIVINE_GIFT": {
+   "file": "hypixel/divine_gift.png",
+   "size": 16,
+   "source": "hypixel"
+  },
   "EPOCH_CAKE_BLACK": {
    "file": "heads/epoch_cake_black.png",
    "size": 32,

@@ -53,7 +53,7 @@ function lineOf(r: Plan['rows'][number]): string {
 }
 
 const MARKET = { bazaar: 'BZ', ah: 'AH' } as const
-/** A live price replaces the "old estimate" style warning chips; time-limited chips stay. */
+/** Live prices get a BZ/AH chip; seasonal, event and no-listing chips stay. */
 function chipOf(s: Source): { text: string; kind: string } | null {
   const m = live.market[s.id]
   if (m && s.chip !== 'seasonal' && s.chip !== 'event') return { text: MARKET[m], kind: 'live' }
